@@ -163,4 +163,8 @@ sudo make
 sudo make clean
 ```
 
+## Checking the print queue
+While Jupyter lab runs on port 8000 or 8888, the CUPS print server admin interface runs on a different port:
+
+`http://jupyter4:631/jobs?which_jobs=completed`
 

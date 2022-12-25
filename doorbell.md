@@ -25,6 +25,9 @@ To build the doorbell detection circuit, connect all of these components togethe
                 +------------+
                       |
                       |
+                | Voltage Drop |
+                |  Resistors   |
+                      |
                       V
                 +------------+
                 |            |
@@ -32,6 +35,8 @@ To build the doorbell detection circuit, connect all of these components togethe
                 |            |
                 +------------+
                       |
+                      |
+                  | Resistor |
                       |
                       V
                 +------------+

@@ -40,6 +40,7 @@ To build the doorbell detection circuit, connect all of these components togethe
                 |            |
                 +------------+
 
+This circuit also requires two resistors in series between the doorbell and the opto coupler and also between the opto coupler and the raspberry pi.
 
 ## Components
 

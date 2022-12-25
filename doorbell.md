@@ -48,6 +48,9 @@ To build the doorbell detection circuit, connect all of these components togethe
 This circuit also requires two resistors in series between the doorbell and the opto coupler and also between the opto coupler and the raspberry pi.
 
 ### Voltage Divider Circuit
+To design a circuit with resistors to drop a 16V line to 3.3V, we use a voltage divider circuit. A voltage divider circuit is a simple circuit that uses two resistors in series to divide the input voltage by a certain ratio. In this case the input voltage levels are about 16V (between the two wires connected to the push button at the doorbell).
+
+Here is a diagram of a voltage divider circuit that can be used to drop a 16V line to 3.3V:
 
                               +------------+
                               |            |

@@ -49,10 +49,6 @@ This circuit also requires two resistors in series between the doorbell and the 
 
 ### Voltage Divider Circuit
 
-To design a circuit with resistors to drop a 16V line to 3.3V, we use a voltage divider circuit. A voltage divider circuit is a simple circuit that uses two resistors in series to divide the input voltage by a certain ratio.
-
-Here is a diagram of a voltage divider circuit that can be used to drop a 16V line to 3.3V:
-
                               +------------+
                               |            |
                               | 16V line   |
@@ -74,7 +70,7 @@ In this circuit, R1 and R2 are resistors that are placed in series with the 16V 
 
 To calculate the resistor values, you can use the following formula:
 
-R1 = R2 * (Vout / (Vin - Vout))
+$$R1 = R2 * \frac{Vout}{Vin - Vout}$$
 
 where:
 
@@ -83,21 +79,19 @@ Vout is the output voltage (3.3V in this case)
 Vin is the input voltage (16V in this case)
 Plugging in the values from the example above, we get:
 
-R1 = 10 kΩ * (3.3V / (16V - 3.3V)) = 10 kΩ * (3.3V / 12.7V) = 10 kΩ * 0.262 = 2.62 kΩ
+$$R1 = 10k\Omega * \frac{3.3V}{16V - 3.3V} = 10k\Omega * \frac{3.3V}{12.7V} = 10k\Omega * 0.262 = 2.62k\Omega$$
 
 Therefore, the value of R1 should be approximately 2.62 kΩ.
 
 To calculate the value of R2, we can use the same formula, but with R1 and R2 swapped:
 
-R2 = R1 * (Vin - Vout) / Vout
+$$R2 = R1 * \frac{Vin - Vout}{Vout}$$
 
 Plugging in the values from the example above, we get:
 
-R2 = 2.62 kΩ * (16V - 3.3V) / 3.3V = 2.62 kΩ * 12.7V / 3.3V = 2.62 kΩ * 3.87 = 10.1 kΩ
+$$R2 = 2.62k\Omega * \frac{16V - 3.3V}{3.3V} = 2.62k\Omega * \frac{12.7V}{3.3V} = 2.62k\Omega * 3.87 = 10.1k\Omega$$
 
 Therefore, the value of R2 should be approximately 10.1 kΩ.
-
-It's worth noting that these resistor values are just estimates, and the actual voltage drop may be slightly different due to factors such as resistor tolerance and the load on the circuit. Once the circuit is built, it is important to experiment with different resistor values to fine-tune the voltage drop to the desired level.
 
 
 ## Components

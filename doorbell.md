@@ -71,7 +71,7 @@ Here is a diagram of a voltage divider circuit that can be used to drop a 16V li
 
 In this circuit, R1 and R2 are resistors that are placed in series with the 16V line. The value of these resistors will determine the ratio at which the input voltage is divided.
 
-To calculate the resistor values, you can use the following formula:
+To calculate the resistor values, use the following formula:
 
 $$R1 = R2 * \frac{Vout}{Vin - Vout}$$
 
@@ -132,7 +132,7 @@ while True:
   time.sleep(1)
 ```
 
-The program first imports the necessary libraries (RPi.GPIO and time) and sets up the GPIO pins. It then defines a callback function that will be called whenever the doorbell is pressed. This function simply prints a message to the console, but you can insert code here to trigger any desired response (e.g. send a notification, activate a connected device).
+The program first imports the necessary libraries (RPi.GPIO and time) and sets up the GPIO pins. It then defines a callback function that will be called whenever the doorbell is pressed. This function simply prints a message to the console; insert code here to trigger any desired response (e.g. send a notification, activate a connected device).
 
 The program then sets up an event detect on the doorbell pin, using the add_event_detect function from the RPi.GPIO library. This function tells the raspberry pi to listen for a falling edge (a transition from high to low) on the specified pin, and to call the doorbell_callback function whenever it detects one. The bouncetime parameter specifies the minimum amount of time that must pass between successive calls to the callback function.
 

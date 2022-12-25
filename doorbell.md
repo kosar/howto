@@ -10,7 +10,7 @@ The doorbell detection circuit consists of a few key components:
 
 1. The raspberry pi: This is a small computer that can be programmed to perform a variety of tasks. In this case, the raspberry pi will be used to monitor the signal on its GPIO (general-purpose input/output) ports and trigger a response when the doorbell is pressed.
 
-1. The breadboard: This is a device that allows you to easily prototype circuits by connecting components with jumper wires. The breadboard will be used to mount the opto coupler and the raspberry pi, as well as any other components that may be necessary, such as resistors or capacitors.
+1. The breadboard: This is a device that allows easy building of prototype circuits by connecting components with jumper wires. The breadboard will be used to mount the opto coupler and the raspberry pi, as well as any other components that may be necessary, such as resistors or capacitors.
 
 1. The electrical leads: These are short wires that will be used to connect the doorbell, the opto coupler, and the raspberry pi. The doorbell will be connected to the LED side of the opto coupler, and the raspberry pi will be connected to the transistor side.
 

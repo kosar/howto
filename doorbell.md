@@ -103,11 +103,11 @@ During build out of this circuit it is advantageous to use the opto coupler on a
 
 Individual Opto Couplers can be found as a packaged dual in line packaged chip (DIP Chip).
 
-[DIP Chip - Compatible with Sharp PC817](https://www.amazon.com/gp/product/B08CXRHDHP/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&psc=1){:target="_blank"}
+[DIP Chip - Compatible with Sharp PC817](https://www.amazon.com/gp/product/B08CXRHDHP/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&psc=1)
 
 This opto coupler can also be packaged in a small pre-built circuit. 
 
-[Integrated board with Opto Coupler and built-in resistors](https://www.amazon.com/gp/product/B07GMHLL2M/ref=ppx_yo_dt_b_asin_title_o01_s00?ie=UTF8&psc=1){:target="_blank"}
+[Integrated board with Opto Coupler and built-in resistors](https://www.amazon.com/gp/product/B07GMHLL2M/ref=ppx_yo_dt_b_asin_title_o01_s00?ie=UTF8&psc=1)
 
 ## Code
 
@@ -141,11 +141,4 @@ Finally, the program enters an infinite loop and waits for the doorbell to be pr
 
 ## Testing
 
-The existing telephone system uses the Channel Vision TE 200 circuit board ([manual here](https://jmacfiles.s3.amazonaws.com/TE200II.pdf){:target="_blank"}).
-
-## References / Articles Consulted Prior To This Design
-There are many articles on the internet about coupling electrical circuits like this one. 
-
-[This one](https://www.instructables.com/Isolating-circuits-from-your-arduino-with-optocoup/){:target="_blank"} talks about doing this on an Arduino board, a common micro controller based solution. It is important to see how the circuit is designed from this article, even if the actual controller is not the Arduino (e.g., a Pi). 
-
-[This article from Raspberry Pi Forums](https://forums.raspberrypi.com/viewtopic.php?t=220127){:target="_blank"} has a good set of ideas and prior art. The simplest example is in the threaded comments [by 'rpdom'](https://forums.raspberrypi.com/viewtopic.php?t=220127#p1351502){:target="_blank"} where they specify the same circuit (essentially) as this one. 
+The existing telephone system uses the Channel Vision TE 200 circuit board ([manual here](https://jmacfiles.s3.amazonaws.com/TE200II.pdf)).

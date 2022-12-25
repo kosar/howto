@@ -47,6 +47,59 @@ To build the doorbell detection circuit, connect all of these components togethe
 
 This circuit also requires two resistors in series between the doorbell and the opto coupler and also between the opto coupler and the raspberry pi.
 
+### Voltage Divider Circuit
+
+To design a circuit with resistors to drop a 16V line to 3.3V, we use a voltage divider circuit. A voltage divider circuit is a simple circuit that uses two resistors in series to divide the input voltage by a certain ratio.
+
+Here is a diagram of a voltage divider circuit that can be used to drop a 16V line to 3.3V:
+
+                              +------------+
+                              |            |
+                              | 16V line   |
+                              |            |
+                              +------------+
+                                    |
+                                    |
+         R1 (10 kΩ)                 V
+                                    |
+                                    |
+                                    V
+                +------------+     R2 (10 kΩ)
+                |            |
+                | 3.3V line  |
+                |            |
+                +------------+
+
+In this circuit, R1 and R2 are resistors that are placed in series with the 16V line. The value of these resistors will determine the ratio at which the input voltage is divided.
+
+To calculate the resistor values, you can use the following formula:
+
+R1 = R2 * (Vout / (Vin - Vout))
+
+where:
+
+R1 and R2 are the resistor values (in ohms)
+Vout is the output voltage (3.3V in this case)
+Vin is the input voltage (16V in this case)
+Plugging in the values from the example above, we get:
+
+R1 = 10 kΩ * (3.3V / (16V - 3.3V)) = 10 kΩ * (3.3V / 12.7V) = 10 kΩ * 0.262 = 2.62 kΩ
+
+Therefore, the value of R1 should be approximately 2.62 kΩ.
+
+To calculate the value of R2, we can use the same formula, but with R1 and R2 swapped:
+
+R2 = R1 * (Vin - Vout) / Vout
+
+Plugging in the values from the example above, we get:
+
+R2 = 2.62 kΩ * (16V - 3.3V) / 3.3V = 2.62 kΩ * 12.7V / 3.3V = 2.62 kΩ * 3.87 = 10.1 kΩ
+
+Therefore, the value of R2 should be approximately 10.1 kΩ.
+
+It's worth noting that these resistor values are just estimates, and the actual voltage drop may be slightly different due to factors such as resistor tolerance and the load on the circuit. Once the circuit is built, it is important to experiment with different resistor values to fine-tune the voltage drop to the desired level.
+
+
 ## Components
 
 During build out of this circuit it is advantageous to use the opto coupler on a breadboard in order to experiment with the resistor values in the circuit, particularly so that the circuit does not inadvertently burn out the opto coupler chip. 

@@ -80,6 +80,9 @@ The program first imports the necessary libraries (RPi.GPIO and time) and sets u
 
 The program then sets up an event detect on the doorbell pin, using the add_event_detect function from the RPi.GPIO library. This function tells the raspberry pi to listen for a falling edge (a transition from high to low) on the specified pin, and to call the doorbell_callback function whenever it detects one. The bouncetime parameter specifies the minimum amount of time that must pass between successive calls to the callback function.
 
+Finally, the program enters an infinite loop and waits for the doorbell to be pressed. When the doorbell is pressed, the event detect function triggers the callback function, which executes the desired response.
+
+
 ## Testing
 
 The existing telephone system uses the Channel Vision TE 200 circuit board ([manual here](https://jmacfiles.s3.amazonaws.com/TE200II.pdf)).

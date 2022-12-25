@@ -82,4 +82,4 @@ The program then sets up an event detect on the doorbell pin, using the add_even
 
 ## Testing
 
-The existing telephone system uses the Channel Vision TE 200 circuit board ([manual here](https://jmacfiles.s3.amazonaws.com/TE200II.pdf).
+The existing telephone system uses the Channel Vision TE 200 circuit board ([manual here](https://jmacfiles.s3.amazonaws.com/TE200II.pdf)).

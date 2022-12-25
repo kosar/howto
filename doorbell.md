@@ -148,4 +148,10 @@ There are many articles on the internet about coupling electrical circuits like 
 
 [This one](https://www.instructables.com/Isolating-circuits-from-your-arduino-with-optocoup/) talks about doing this on an Arduino board, a common micro controller based solution. It is important to see how the circuit is designed from this article, even if the actual controller is not the Arduino (e.g., a Pi). 
 
-[This article from Raspberry Pi Forums](https://forums.raspberrypi.com/viewtopic.php?t=220127) has a good set of ideas and prior art. The simplest example is in the threaded comments [by 'rpdom'](https://forums.raspberrypi.com/viewtopic.php?t=220127#p1351502) where they specify the same circuit (essentially) as this one. 
+[This article from Raspberry Pi Forums](https://forums.raspberrypi.com/viewtopic.php?t=220127) has a good set of ideas and prior art. The simplest example is in the threaded comments [by 'rpdom'](https://forums.raspberrypi.com/viewtopic.php?t=220127#p1351502) where they specify the same circuit (essentially) as this one.
+
+### Here is what ChatGPT gives us as articles for further background:
+
+1. [Optocoupler Basics: How to Use an Optocoupler with an Arduino](https://www.arduino-tutorials.com/opto-couplers/optocoupler-basics-how-to-use-an-optocoupler-with-an-arduino/)
+2. [How to Use an Optocoupler with a Raspberry Pi](https://www.raspberrypi.org/documentation/usage/gpio/optocouplers.md)
+3. [Opto-Isolators: How to Use an Optocoupler in Your Circuit](https://www.electronics-tutorials.ws/opto/opto.html)

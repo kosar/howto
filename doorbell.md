@@ -146,6 +146,6 @@ The existing telephone system uses the Channel Vision TE 200 circuit board ([man
 ## References / Articles Consulted Prior To This Design
 There are many articles on the internet about coupling electrical circuits like this one. 
 
-[This one](https://www.instructables.com/Isolating-circuits-from-your-arduino-with-optocoup/){:target="_blank"} talks about doing this on an Arduino board, a common micro controller based solution. It is important to see how the circuit is designed from this article, even if the actual controller is not the Arduino (e.g., a Pi). 
+[This one](https://www.instructables.com/Isolating-circuits-from-your-arduino-with-optocoup/) talks about doing this on an Arduino board, a common micro controller based solution. It is important to see how the circuit is designed from this article, even if the actual controller is not the Arduino (e.g., a Pi). 
 
-[This article from Raspberry Pi Forums](https://forums.raspberrypi.com/viewtopic.php?t=220127){:target="_blank"} has a good set of ideas and prior art. The simplest example is in the threaded comments [by 'rpdom'](https://forums.raspberrypi.com/viewtopic.php?t=220127#p1351502){:target="_blank"} where they specify the same circuit (essentially) as this one. 
+[This article from Raspberry Pi Forums](https://forums.raspberrypi.com/viewtopic.php?t=220127) has a good set of ideas and prior art. The simplest example is in the threaded comments [by 'rpdom'](https://forums.raspberrypi.com/viewtopic.php?t=220127#p1351502) where they specify the same circuit (essentially) as this one. 

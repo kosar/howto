@@ -166,3 +166,18 @@ There are many articles on the internet about coupling electrical circuits like 
 1. [Optocoupler Basics: How to Use an Optocoupler with an Arduino](https://www.arduino-tutorials.com/opto-couplers/optocoupler-basics-how-to-use-an-optocoupler-with-an-arduino/)
 2. [How to Use an Optocoupler with a Raspberry Pi](https://www.raspberrypi.org/documentation/usage/gpio/optocouplers.md)
 3. [Opto-Isolators: How to Use an Optocoupler in Your Circuit](https://www.electronics-tutorials.ws/opto/opto.html)
+
+## Next Up: Connect the Doorbell Sensor to the Internet!
+
+### Method 1: Raspberry Pi + Home Assistant + Trigger / Action Integration
+
+### Method 2: Emit an event to the 'world' and let the world react to it as they see fit! (has 2 parts)
+
+#### 2.1: Build the 'Analog to Internet' Event Bridge
+
+#### 2.2: React to the event and make something ring or equivalent
+
+# Boneyard -- things tried and discarded or dead-end
+
+## Installing on an old Raspberry Pi Model B 
+This was a valiant attempt to reuse some very old hardware with some fairly modern and heavy software (a VM environment, with a ton of server-like software needed). On a Raspberry Pi with limited RAM and a single threaded CPU (one core) that turned out to be a dead end. The Pi simply cannot run that heavy of a system, without more investment so after a few hours we abandoned running the Docker + TypeScript version of a NOSTR Relay. 

@@ -8,6 +8,9 @@ Evin Jaff designed the initial approach to this problem by finding the source of
 
 Evin then put together a simple prototype circuit which proved that the signal was reliable, and that we could intercept the signal without having to alter or disable any of the existing functionality in the doorbell system. 
 
+### Options: Raspberry Pi or the Arduino
+There are a lot of ways to solve this problem, so we added one more constraint to make it a bit easier to find a path forward: we wanted to post a message on the network, which required us to use a network-enabled platform. Evin looked at using an Arduino, but once we realized that the network and internet connectivity would be required, we quickly pivoted to the Raspberry Pi which has a sophisticated linux-like stack and ample hardware around our household. 
+
 ## Design
 
 The doorbell detection circuit consists of a few key components:

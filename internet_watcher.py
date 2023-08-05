@@ -125,19 +125,6 @@ def calculate_moving_average(filename, num_records):
         logger.warning(f"Error calculating moving average: {e}")
         return None, None
 
-def check_alert_threshold(download_speed, upload_speed, download_avg, upload_avg, threshold_percentage):
-    # Calculate the percentage distance between the latest speed and the moving average
-    download_distance = abs((download_speed - download_avg) / download_avg * 100)
-    upload_distance = abs((upload_speed - upload_avg) / upload_avg * 100)
-
-    # Check if the distance exceeds the threshold percentage
-    if download_distance > threshold_percentage or upload_distance > threshold_percentage:
-        logger.warning(f"Speeds deviated significantly from moving average. Download Distance: {download_distance:.2f}%, Upload Distance: {upload_distance:.2f}%")
-        try:
-            send_email("Internet Speed Alert", f"Download Speed: {download_speed:.2f} Mbps, Upload Speed: {upload_speed:.2f} Mbps")
-        except Exception as e:
-            logger.warning(f"Error during email alert: {e}")
-
 def write_header_if_not_exists(filename):
     if not os.path.exists(filename):
         with open(filename, 'w', newline='') as file:
@@ -188,6 +175,11 @@ def main(interval, moving_average_records, threshold_percentage):
                 if download_diff > threshold_percentage or upload_diff > threshold_percentage:
                     logger.warning(f"Significant deviation from moving average - Download: {download_diff:.2f}%, Upload: {upload_diff:.2f}%")
                     # You can add your alerting mechanism here
+                    try:
+                        send_email("Internet Speed Alert", f"Download Speed: {download_speed:.2f} Mbps, Upload Speed: {upload_speed:.2f} Mbps")
+                    except Exception as e:
+                        logger.warning(f"Error during email alert: {e}")
+
         else:
             logger.warning("Speed test failed. Skipping CSV update.")
             print ("Speed test failed. Skipping CSV update.")

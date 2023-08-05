@@ -8,6 +8,48 @@ import speedtest
 import argparse
 import logging
 import logging.handlers
+import os
+import smtplib
+from email.mime.text import MIMEText
+
+def load_env_vars(file_path):
+    """Load environment variables from a shell script file."""
+    try:
+        with open(file_path, 'r') as env_file:
+            for line in env_file:
+                if line.strip() and not line.strip().startswith('#'):
+                    var_name, var_value = line.strip().split('=', 1)
+                    os.environ[var_name] = var_value.strip('"')
+    except Exception as e:
+        print(f"Error loading environment variables: {e}")
+
+def log_env_vars():
+    for var_name, var_value in os.environ.items():
+        logger.info(f"Environment Variable: {var_name}={var_value}")
+
+def send_email(subject, body):
+    """Send an email using the configured SMTP settings."""
+    sender_email = os.environ.get("SENDER_EMAIL")
+    receiver_email = os.environ.get("RECEIVER_EMAIL")
+    smtp_server = os.environ.get("SMTP_SERVER")
+    smtp_port = int(os.environ.get("SMTP_PORT"))
+    smtp_username = os.environ.get("SMTP_USERNAME")
+    smtp_password = os.environ.get("SMTP_PASSWORD")
+
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = sender_email
+    msg['To'] = receiver_email
+
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_username, smtp_password)
+            server.sendmail(sender_email, receiver_email, msg.as_string())
+        print("Email sent successfully.")
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
 
 # Generate LOG_FILENAME dynamically based on the current folder and script name
 LOG_FILENAME = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"{os.path.splitext(os.path.basename(__file__))[0]}.log")
@@ -91,8 +133,10 @@ def check_alert_threshold(download_speed, upload_speed, download_avg, upload_avg
     # Check if the distance exceeds the threshold percentage
     if download_distance > threshold_percentage or upload_distance > threshold_percentage:
         logger.warning(f"Speeds deviated significantly from moving average. Download Distance: {download_distance:.2f}%, Upload Distance: {upload_distance:.2f}%")
-        # Add any additional action here, such as sending an email or triggering an alert system.
-
+        try:
+            send_email("Internet Speed Alert", f"Download Speed: {download_speed:.2f} Mbps, Upload Speed: {upload_speed:.2f} Mbps")
+        except Exception as e:
+            logger.warning(f"Error during email alert: {e}")
 
 def write_header_if_not_exists(filename):
     if not os.path.exists(filename):
@@ -154,6 +198,13 @@ def main(interval, moving_average_records, threshold_percentage):
 if __name__ == "__main__":
     # Get the directory of the script
     script_directory = os.path.dirname(os.path.abspath(__file__))
+    
+    # Load environment variables from the env_vars.sh file
+    env_file_path = os.path.join(script_directory, "env_vars.sh")
+    load_env_vars(env_file_path)
+
+    # Log loaded environment variables for debugging
+    log_env_vars()
 
     parser = argparse.ArgumentParser(description='Run internet speed test and log the results in a CSV file.')
     parser.add_argument('--interval', type=int, default=3600, help='Interval in seconds for the speed test loop.')
@@ -168,3 +219,4 @@ if __name__ == "__main__":
     write_header_if_not_exists(csv_filename)
 
     main(args.interval, args.moving_average_records, args.threshold_percentage)
+

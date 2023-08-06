@@ -176,7 +176,7 @@ def main(interval, moving_average_records, threshold_percentage):
                     logger.warning(f"Significant deviation from moving average - Download: {download_diff:.2f}%, Upload: {upload_diff:.2f}%")
                     # You can add your alerting mechanism here
                     try:
-                        send_email("Internet Speed Alert", f"Download Speed: {download_speed:.2f} Mbps, Upload Speed: {upload_speed:.2f} Mbps")
+                        send_email("Internet Speed Alert", f"D: {download_speed:.2f} Mbps, U: {upload_speed:.2f} Mbps")
                     except Exception as e:
                         logger.warning(f"Error during email alert: {e}")
 

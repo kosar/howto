@@ -140,6 +140,10 @@ def write_to_csv(filename, data):
     except Exception as e:
         logger.error(f"Error writing to CSV: {filename}, Error: {e}")
 
+def log_arguments(args):
+    logger.info("Arguments:")
+    for arg, value in vars(args).items():
+        logger.info(f"{arg}: {value}")
 
 def main(interval, moving_average_records, threshold_percentage):
     script_directory = os.getcwd()
@@ -147,8 +151,9 @@ def main(interval, moving_average_records, threshold_percentage):
 
     # Write the header row if the file does not exist
     write_header_if_not_exists(csv_filename)
-    logger.info("Interval: %s seconds", interval)
-
+    # Log all the argument values (including defaults) at the start
+    log_arguments(args)
+    
     while True:
         # Run the speed test and get the timestamp, download speed, and upload speed
         timestamp, download_speed, upload_speed = run_speed_test()
@@ -176,7 +181,22 @@ def main(interval, moving_average_records, threshold_percentage):
                     logger.warning(f"Significant deviation from moving average - Download: {download_diff:.2f}%, Upload: {upload_diff:.2f}%")
                     # You can add your alerting mechanism here
                     try:
-                        send_email("Internet Speed Alert", f"D: {download_speed:.2f} Mbps, U: {upload_speed:.2f} Mbps")
+                        # Include the interesting metric in the email subject
+                        subject = f"Speed Alert - D:{download_diff:.2f}% U:{upload_diff:.2f}%"
+                        
+                        # Find max values for upload and download in the last `moving_average_records` entries
+                        with open(csv_filename, 'r', newline='') as file:
+                            reader = csv.DictReader(file)
+                            download_values = [float(row['Download Speed (Mbps)']) for row in reader]
+                        max_download = max(download_values[-moving_average_records:])
+                        
+                        with open(csv_filename, 'r', newline='') as file:
+                            reader = csv.DictReader(file)
+                            upload_values = [float(row['Upload Speed (Mbps)']) for row in reader]
+                        max_upload = max(upload_values[-moving_average_records:])
+                        
+                        message_body = f"D: {download_speed:.2f} Mbps (Max: {max_download:.2f} Mbps), U: {upload_speed:.2f} Mbps (Max: {max_upload:.2f} Mbps)\n"
+                        send_email(subject, message_body)
                     except Exception as e:
                         logger.warning(f"Error during email alert: {e}")
 
@@ -201,7 +221,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run internet speed test and log the results in a CSV file.')
     parser.add_argument('--interval', type=int, default=3600, help='Interval in seconds for the speed test loop.')
     parser.add_argument('--moving-average-records', type=int, default=5, help='Number of records to consider for moving average calculation.')
-    parser.add_argument('--threshold-percentage', type=float, default=10, help='Threshold percentage for alert generation.')
+    parser.add_argument('--threshold-percentage', type=float, default=30, help='Threshold percentage for alert generation.')
     args = parser.parse_args()
 
     # Use the script's directory to create the CSV file

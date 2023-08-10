@@ -40,7 +40,6 @@ function scanTravelEmails() {
         var body = message.getPlainBody();
         var date = message.getDate();
         var confirmationNumber = getConfirmationNumber(body) || getConfirmationNumber(subject); // Try both body and subject
-        Logger.log('confirmationNumber: ' + confirmationNumber)
         var messageLink = "https://mail.google.com/mail/u/0/#inbox/" + messageId; // Define message link
 
         if (confirmationNumber) {
@@ -78,6 +77,11 @@ function scanTravelEmails() {
     travelData.push(rowData);
   }
 
+  // Sort the travel data by date in descending order
+  travelData.sort(function(a, b) {
+    return new Date(b[0]) - new Date(a[0]);
+  });
+
   Logger.log("Scan complete. Found " + travelData.length + " unique travel emails.");
 
   // Write header row
@@ -95,7 +99,8 @@ function getConfirmationNumber(text) {
     "Trip Number",
     "Confirmation",
     "eTicket number",
-    "reservation"
+    "reservation",
+    "Trip#",
     // Add more terms here as needed
   ];
 

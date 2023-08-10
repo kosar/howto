@@ -1,13 +1,17 @@
+// Set the number of days for the search parameter
+const SEARCH_DAYS = 100;
+
 function scanTravelEmails() {
   Logger.log("Scanning for travel emails...");
 
-  var searchQueries = [
-    "subject:(reservation OR booking OR itinerary) has:attachment newer_than:100d",
-    "subject:(flight OR airline) has:attachment newer_than:100d",
-    "subject:(hotel OR accommodation) has:attachment newer_than:100d",
-    "subject:(trip OR travel) has:attachment newer_than:100d",
-    "subject:(confirmation) has:attachment newer_than:100d",
-    "subject:(itinerary) has:attachment newer_than:100d",
+    var searchQueries = [
+    "subject:(reservation OR booking OR itinerary)  newer_than:" + SEARCH_DAYS + "d",
+    "subject:(flight OR airline)  newer_than:" + SEARCH_DAYS + "d",
+    "subject:(hotel OR accommodation) newer_than:" + SEARCH_DAYS + "d",
+    "subject:(trip OR travel) newer_than:" + SEARCH_DAYS + "d",
+    "subject:(confirmation) newer_than:" + SEARCH_DAYS + "d",
+    "subject:(itinerary) newer_than:" + SEARCH_DAYS + "d",
+    "subject:your flight receipt  newer_than:" + SEARCH_DAYS + "d",
     // Add more search queries here
   ];
 
@@ -22,11 +26,11 @@ function scanTravelEmails() {
   for (var q = 0; q < searchQueries.length; q++) {
     Logger.log("Scanning for: " + searchQueries[q])
     var threads = GmailApp.search(searchQueries[q]);
-    Logger.log ("Found " + threads.length + " threads!")
+    // Logger.log ("Found " + threads.length + " threads!")
     
     for (var i = 0; i < threads.length; i++) {
       var messages = threads[i].getMessages();
-      Logger.log ("Found " + messages.length + " messages!")
+      // Logger.log ("Found " + messages.length + " messages!")
       for (var j = 0; j < messages.length; j++) {
         var message = messages[j];
         var messageId = message.getId();
@@ -79,13 +83,16 @@ function scanTravelEmails() {
   summarySheet.getRange(2, 1, travelData.length, columnHeaders.length).setValues(travelData);
 }
 
-
-function getConfirmationNumber(text) {
-  var regex = /\bConfirmation Number: ([A-Za-z0-9]+)\b/i;
-  var match = regex.exec(text);
-  return match ? match[1] : null;
+function getConfirmationNumber(body) {
+  var confirmationRegex = /confirmation\s*([a-zA-Z0-9]+)/i;
+  var matches = body.match(confirmationRegex);
+  
+  if (matches && matches.length >= 2) {
+    return matches[1].trim();
+  }
+  
+  return null;
 }
-
 
 function onOpen() {
   var ui = SpreadsheetApp.getUi();

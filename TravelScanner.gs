@@ -29,11 +29,9 @@ function scanTravelEmails() {
   for (var q = 0; q < searchQueries.length; q++) {
     Logger.log("Scanning for: " + searchQueries[q])
     var threads = GmailApp.search(searchQueries[q]);
-    // Logger.log ("Found " + threads.length + " threads!")
     
     for (var i = 0; i < threads.length; i++) {
       var messages = threads[i].getMessages();
-      // Logger.log ("Found " + messages.length + " messages!")
       for (var j = 0; j < messages.length; j++) {
         var message = messages[j];
         var messageId = message.getId();
@@ -41,7 +39,7 @@ function scanTravelEmails() {
         var subject = message.getSubject();
         var body = message.getPlainBody();
         var date = message.getDate();
-        var confirmationNumber = getConfirmationNumber(body);
+        var confirmationNumber = getConfirmationNumber(body) || getConfirmationNumber(subject); // Try both body and subject
         Logger.log('confirmationNumber: ' + confirmationNumber)
         var messageLink = "https://mail.google.com/mail/u/0/#inbox/" + messageId; // Define message link
 
@@ -89,16 +87,28 @@ function scanTravelEmails() {
   summarySheet.getRange(2, 1, travelData.length, columnHeaders.length).setValues(travelData);
 }
 
-function getConfirmationNumber(body) {
-  var regex = /\b(Confirmation Number|Record Locator|confirmation code|Trip Number|Confirmation|eTicket number):\s*([A-Za-z0-9]+)(?:\r?\n)?/i;
-  var matches = body.match(regex);
+function getConfirmationNumber(text) {
+  var terms = [
+    "Confirmation Number",
+    "Record Locator",
+    "confirmation code",
+    "Trip Number",
+    "Confirmation",
+    "eTicket number",
+    "car rental reservation",
+    // Add more terms here as needed
+  ];
+
+  var termsPattern = terms.map(term => term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|');
+  var separators = '(?::\\s*|\\s*:\\s*|\\s*\\r?\\n\\s*)'; // Allow for various separators
+  var regex = new RegExp('\\b(' + termsPattern + ')' + separators + '([A-Za-z0-9]+)(?:\\r?\\n)?', 'i');
+
+  var matches = text.match(regex);
   if (matches && matches.length >= 3) {
     return matches[2].trim();
   }
   return null;
 }
-
-
 
 function onOpen() {
   var ui = SpreadsheetApp.getUi();

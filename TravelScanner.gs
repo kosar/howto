@@ -46,7 +46,9 @@ function scanTravelEmails() {
               date: date
             };
           } else {
-            confirmationData[confirmationNumber].senderNames.push(senderName);
+            if (confirmationData[confirmationNumber].senderNames.indexOf(senderName) === -1) {
+              confirmationData[confirmationNumber].senderNames.push(senderName);
+            }
             confirmationData[confirmationNumber].emailLinks.push(messageLink); // Include message link here
           }
         }
@@ -76,6 +78,7 @@ function scanTravelEmails() {
   // Populate sheets
   summarySheet.getRange(2, 1, travelData.length, columnHeaders.length).setValues(travelData);
 }
+
 
 function getConfirmationNumber(text) {
   var regex = /\bConfirmation Number: ([A-Za-z0-9]+)\b/i;

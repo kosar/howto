@@ -4,14 +4,17 @@ const SEARCH_DAYS = 100;
 function scanTravelEmails() {
   Logger.log("Scanning for travel emails...");
 
-    var searchQueries = [
-    "subject:(reservation OR booking OR itinerary)  newer_than:" + SEARCH_DAYS + "d",
-    "subject:(flight OR airline)  newer_than:" + SEARCH_DAYS + "d",
-    "subject:(hotel OR accommodation) newer_than:" + SEARCH_DAYS + "d",
-    "subject:(trip OR travel) newer_than:" + SEARCH_DAYS + "d",
-    "subject:(confirmation) newer_than:" + SEARCH_DAYS + "d",
-    "subject:(itinerary) newer_than:" + SEARCH_DAYS + "d",
-    "subject:your flight receipt  newer_than:" + SEARCH_DAYS + "d",
+  var searchQueries = [
+    "subject:(itinerary) has:attachment newer_than:" + SEARCH_DAYS + "d",
+    "subject:(confirmation) has:attachment newer_than:" + SEARCH_DAYS + "d",
+    "subject:(your trip confirmation) Record Locator newer_than:" + SEARCH_DAYS + "d",
+    "from:alaskaair.com your confirmation receipt newer_than:" + SEARCH_DAYS + "d",
+    "Your priceline itinerary newer_than:" + SEARCH_DAYS + "d",
+    "from:navan.com is confirmed newer_than:" + SEARCH_DAYS + "d",
+    "from:nyac.org Confirmation Number newer_than:" + SEARCH_DAYS + "d",
+    "from:united.com Receipt for Confirmation newer_than:" + SEARCH_DAYS + "d",
+    "no-reply@navan.com is confirmed newer_than:" + SEARCH_DAYS + "d",
+    "from:costcotravel.com costco travel: booking newer_than:" + SEARCH_DAYS + "d",
     // Add more search queries here
   ];
 
@@ -39,6 +42,7 @@ function scanTravelEmails() {
         var body = message.getPlainBody();
         var date = message.getDate();
         var confirmationNumber = getConfirmationNumber(body);
+        Logger.log('confirmationNumber: ' + confirmationNumber)
         var messageLink = "https://mail.google.com/mail/u/0/#inbox/" + messageId; // Define message link
 
         if (confirmationNumber) {
@@ -53,7 +57,9 @@ function scanTravelEmails() {
             if (confirmationData[confirmationNumber].senderNames.indexOf(senderName) === -1) {
               confirmationData[confirmationNumber].senderNames.push(senderName);
             }
-            confirmationData[confirmationNumber].emailLinks.push(messageLink); // Include message link here
+            if (confirmationData[confirmationNumber].emailLinks.length < 5) {
+              confirmationData[confirmationNumber].emailLinks.push(messageLink); // Include message link here
+            }
           }
         }
       }
@@ -84,15 +90,15 @@ function scanTravelEmails() {
 }
 
 function getConfirmationNumber(body) {
-  var confirmationRegex = /confirmation\s*([a-zA-Z0-9]+)/i;
-  var matches = body.match(confirmationRegex);
-  
-  if (matches && matches.length >= 2) {
-    return matches[1].trim();
+  var regex = /\b(Confirmation Number|Record Locator|confirmation code|Trip Number|Confirmation|eTicket number):\s*([A-Za-z0-9]+)(?:\r?\n)?/i;
+  var matches = body.match(regex);
+  if (matches && matches.length >= 3) {
+    return matches[2].trim();
   }
-  
   return null;
 }
+
+
 
 function onOpen() {
   var ui = SpreadsheetApp.getUi();

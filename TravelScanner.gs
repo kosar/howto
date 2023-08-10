@@ -95,13 +95,13 @@ function getConfirmationNumber(text) {
     "Trip Number",
     "Confirmation",
     "eTicket number",
-    "car rental reservation",
+    "reservation"
     // Add more terms here as needed
   ];
 
   var termsPattern = terms.map(term => term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|');
   var separators = '(?::\\s*|\\s*:\\s*|\\s*\\r?\\n\\s*)'; // Allow for various separators
-  var regex = new RegExp('\\b(' + termsPattern + ')' + separators + '([A-Za-z0-9]+)(?:\\r?\\n)?', 'i');
+  var regex = new RegExp('\\b(' + termsPattern + ')' + separators + '\\s*([A-Za-z0-9]+|(?<=\\b' + termsPattern + separators + '\\s*)[A-Za-z0-9]+)', 'i');
 
   var matches = text.match(regex);
   if (matches && matches.length >= 3) {

@@ -55,28 +55,16 @@ function scanTravelEmails() {
   }
 
   var travelData = [];
-  var columnHeaders = ["Date", "Sender Names", "Subject", "Confirmation Number"]; // Include headers
-
-  // Create headers for message links
-  for (var i = 1; i <= 30; i++) { // You can adjust the number of columns here
-    // columnHeaders.push("Link " + i);
-    columnHeaders.push(" ");
-  }
+  var columnHeaders = ["Date", "Sender Names", "Subject", "Confirmation Number", "Email Links"]; // Include headers
 
   for (var confirmationNumber in confirmationData) {
     var data = confirmationData[confirmationNumber];
     var rowData = [data.date, data.senderNames.join(", "), data.subject, confirmationNumber];
     
-    // Add message links to the row
-    for (var i = 0; i < data.emailLinks.length; i++) {
-      rowData.push(data.emailLinks[i]);
-    }
-
-    // Fill in any remaining columns
-    while (rowData.length < columnHeaders.length) {
-      rowData.push("");
-    }
-
+    // Add email links to the row
+    var emailLinks = data.emailLinks.join("\n");
+    rowData.push(emailLinks);
+    
     travelData.push(rowData);
   }
 
@@ -88,9 +76,6 @@ function scanTravelEmails() {
   // Populate sheets
   summarySheet.getRange(2, 1, travelData.length, columnHeaders.length).setValues(travelData);
 }
-
-
-
 
 function getConfirmationNumber(text) {
   var regex = /\bConfirmation Number: ([A-Za-z0-9]+)\b/i;

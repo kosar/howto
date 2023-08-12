@@ -4,7 +4,7 @@ The **Internet Speed Tracker** is a Python script that performs periodic speed t
 
 ## Theory of Operation
 
-1. The **Internet Speed Tracker** script periodically performs speed tests using the `speedtest-cli` library, fetching both download and upload speeds.
+1. The **Internet Speed Tracker** [script](https://github.com/kosar/howto/blob/main/internet_watcher.py) periodically performs speed tests using the `speedtest-cli` library, fetching both download and upload speeds.
 2. The obtained speed test results are then logged in a CSV file. Each entry includes a timestamp, download speed, and upload speed.
 3. The script calculates moving averages of both download and upload speeds from the stored CSV data.
 4. If the current speed significantly deviates from the moving average (based on a user-defined threshold percentage), the script sends an email alert to notify the user.

@@ -10,6 +10,9 @@ A collection of "how to" articles and accompanying artifacts (code, tricks, tips
 
 [Retrofitting a Doorbell](https://github.com/kosar/howto/blob/main/doorbell.md)
 
+## Internet Speed Watcher
+
+[Internet Speed Watcher For Raspberry Pi or Debian Distros](https://github.com/kosar/howto/blob/main/internet_watcher_readme.md)
 ## Next How To Goes Here!
 
 

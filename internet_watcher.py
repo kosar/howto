@@ -15,6 +15,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 
+VENV_BIN_PATH = '/home/pi/src/internet_watcher/watcher1/bin'  # Set this to the path of your venv binary
+
 def load_env_vars(file_path):
     """Load environment variables from a shell script file."""
     try:
@@ -102,23 +104,37 @@ import subprocess
 
 def run_speed_test():
     try:
-        # Run the speedtest-cli command with the --secure option and capture the output
-        command = ['/home/pi/src/internet_watcher/watcher1/bin/speedtest', '--secure']
-        result = subprocess.run(command, capture_output=True, text=True)
+        download_speeds = []
+        upload_speeds = []
 
-        # Parse the output to extract download and upload speeds
-        lines = result.stdout.strip().split('\n')
-        download_line = next((line for line in lines if line.startswith('Download:')), None)
-        upload_line = next((line for line in lines if line.startswith('Upload:')), None)
+        for _ in range(3):
+            # Run the speedtest-cli command with the --secure option and capture the output
+            command = [f'{VENV_BIN_PATH}/speedtest', '--secure']
+            result = subprocess.run(command, capture_output=True, text=True)
 
-        if download_line and upload_line:
-            download_speed = float(download_line.split()[1])
-            upload_speed = float(upload_line.split()[1])
-            # Get the current timestamp
-            timestamp = datetime.datetime.now()
-            return timestamp, download_speed, upload_speed
-        else:
-            raise ValueError("Speed test output not found")
+            # Parse the output to extract download and upload speeds
+            lines = result.stdout.strip().split('\n')
+            download_line = next((line for line in lines if line.startswith('Download:')), None)
+            upload_line = next((line for line in lines if line.startswith('Upload:')), None)
+
+            if download_line and upload_line:
+                download_speed = float(download_line.split()[1])
+                upload_speed = float(upload_line.split()[1])
+                download_speeds.append(download_speed)
+                upload_speeds.append(upload_speed)
+            else:
+                logger.warning("Speed test output not found")
+
+            # Small delay between speed test runs
+            time.sleep(1)
+
+        avg_download_speed = sum(download_speeds) / 3
+        avg_upload_speed = sum(upload_speeds) / 3
+        
+        # Get the current timestamp
+        timestamp = datetime.datetime.now()
+        return timestamp, avg_download_speed, avg_upload_speed
+
     except Exception as e:
         logger.warning(f"Error during speed test: {e}")
         return None, None, None
@@ -184,8 +200,8 @@ def main(interval, moving_average_records, threshold_percentage):
             write_to_csv(csv_filename, data)
 
             # Emit log messages with the file location and test speed
-            logger.info(f"Internet Speed Test - Date: {data[0]}, Download Speed: {data[1]} Mbps, Upload Speed: {data[2]} Mbps")
-            print(f"Internet Speed Test - Date: {data[0]}, Download Speed: {data[1]} Mbps, Upload Speed: {data[2]} Mbps")
+            logger.info(f"Internet Speed Test - Date: {data[0]}, Download Speed: {download_speed:.0f} Mbps, Upload Speed: {upload_speed:.0f} Mbps")  # Precision set to 2 decimal places
+            print(f"Internet Speed Test - Date: {data[0]}, Download Speed: {download_speed:.0f} Mbps, Upload Speed: {upload_speed:.0f} Mbps")  # Precision set to 2 decimal places
 
             # Calculate the moving average
             download_avg, upload_avg = calculate_moving_average(csv_filename, moving_average_records)
@@ -203,7 +219,7 @@ def main(interval, moving_average_records, threshold_percentage):
                         csv_file_path = os.path.join(script_directory, f"{os.path.splitext(os.path.basename(__file__))[0]}.csv")
 
                         # Include the interesting metric in the email subject
-                        subject = f"Speed Alert - D:{download_diff:.2f}% U:{upload_diff:.2f}%"
+                        subject = f"Speed Alert2 - D:{download_diff:.2f}% U:{upload_diff:.2f}%"
                         
                         # Find max values for upload and download in the last `moving_average_records` entries
                         with open(csv_filename, 'r', newline='') as file:
@@ -216,7 +232,7 @@ def main(interval, moving_average_records, threshold_percentage):
                             upload_values = [float(row['Upload Speed (Mbps)']) for row in reader]
                         max_upload = max(upload_values[-moving_average_records:])
                         
-                        message_body = f"D: {download_speed:.2f} Mbps (Max: {max_download:.2f} Mbps), U: {upload_speed:.2f} Mbps (Max: {max_upload:.2f} Mbps)\n"
+                        message_body = f"D: {download_speed:.2f} Mbps (Max: {max_download:.2f}), U: {upload_speed:.2f} Mbps (Max: {max_upload:.2f})\n"
                         send_email(subject, message_body, attachment_path=csv_file_path)
                     except Exception as e:
                         logger.warning(f"Error during email alert: {e}")

@@ -82,13 +82,19 @@ function scanTravelEmails() {
     return new Date(b[0]) - new Date(a[0]);
   });
 
-  Logger.log("Scan complete. Found " + travelData.length + " unique travel emails.");
+  // Only proceed if there is data to populate
+  if (travelData.length > 0) {
+    Logger.log("Scan complete. Found " + travelData.length + " unique travel emails.");
 
-  // Write header row
-  summarySheet.getRange(1, 1, 1, columnHeaders.length).setValues([columnHeaders]);
+    // Write header row
+    summarySheet.getRange(1, 1, 1, columnHeaders.length).setValues([columnHeaders]);
 
-  // Populate sheets
-  summarySheet.getRange(2, 1, travelData.length, columnHeaders.length).setValues(travelData);
+    // Populate sheets
+    summarySheet.getRange(2, 1, travelData.length, columnHeaders.length).setValues(travelData);
+  } else {
+    Logger.log("No travel emails found.");
+  }
+
 }
 
 function getConfirmationNumber(text) {

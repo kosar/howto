@@ -39,14 +39,21 @@ function scanTravelEmails() {
         var subject = message.getSubject();
         var body = message.getPlainBody();
         var date = message.getDate();
-        var confirmationNumber = getConfirmationNumber(body) || getConfirmationNumber(subject); // Try both body and subject
+        var confirmationNumber = ""
+        if (subject.includes('priceline itinerary')) {
+          console.log('Trying priceline parser ... ')
+          confirmationNumber = getPricelineConfirmationNumber(body)
+        }else {
+          confirmationNumber = getConfirmationNumber(body) || getConfirmationNumber(subject); // Try both body and subject
+        }
+
         var messageLink = "https://mail.google.com/mail/u/0/#inbox/" + messageId; // Define message link
 
         if (confirmationNumber) {
           if (!confirmationData[confirmationNumber]) {
             confirmationData[confirmationNumber] = {
               senderNames: [senderName],
-              emailLinks: [messageLink], // Include message link here
+              emailLinks: [messageLink],
               subject: subject,
               date: date
             };
@@ -54,8 +61,12 @@ function scanTravelEmails() {
             if (confirmationData[confirmationNumber].senderNames.indexOf(senderName) === -1) {
               confirmationData[confirmationNumber].senderNames.push(senderName);
             }
-            if (confirmationData[confirmationNumber].emailLinks.length < 5) {
-              confirmationData[confirmationNumber].emailLinks.push(messageLink); // Include message link here
+            // Only include the first email link
+            if (confirmationData[confirmationNumber].emailLinks.length === 0) {
+              // Check if messageLink is a valid URL before pushing it
+              if (isValidUrl(messageLink)) {
+                confirmationData[confirmationNumber].emailLinks.push(messageLink);
+              }
             }
           }
         }
@@ -95,6 +106,39 @@ function scanTravelEmails() {
     Logger.log("No travel emails found.");
   }
 
+}
+function isValidUrl(url) {
+  try {
+    new URL(url);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function getPricelineConfirmationNumber(body_of_email) {
+  const confirmationRegex = /Priceline Trip Number: ([\d-]+)/;
+  const checkInRegex = /CHECK-IN: ([^\(]+)/;
+  const checkOutRegex = /CHECK-OUT: ([^\(]+)/;
+
+  const confirmationMatch = body_of_email.match(confirmationRegex);
+  const checkInMatch = body_of_email.match(checkInRegex);
+  const checkOutMatch = body_of_email.match(checkOutRegex);
+
+  if (confirmationMatch && checkInMatch && checkOutMatch) {
+    const confirmationNumber = confirmationMatch[1].trim();
+    const checkInDate = checkInMatch[1].trim();
+    const checkOutDate = checkOutMatch[1].trim();
+
+    const travelDetails = {
+      confirmationNumber: confirmationNumber,
+      checkInDate: checkInDate,
+      checkOutDate: checkOutDate
+    };
+    return travelDetails.confirmationNumber;
+  } else {
+    return null; // Return null if any of the required information is not found
+  }
 }
 
 function getConfirmationNumber(text) {

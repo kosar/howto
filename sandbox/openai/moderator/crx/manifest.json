@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Moderator Extension",
+  "version": "1.0",
+  "description": "Moderator Chrome Extension",
+  "permissions": ["storage"],
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  }
+}

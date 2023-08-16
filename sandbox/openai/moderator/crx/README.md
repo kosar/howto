@@ -1,6 +1,6 @@
 # Moderator Chrome Extension
 
-The Moderator Chrome Extension is a tool that is designed as an experimentation tool for examining selected text from web pages using the OpenAI Moderation API. This extension integrates with the Chrome context menu and provides a side panel for displaying moderation results.
+The Moderator Chrome Extension is an experimentation tool (implemented as a Chrome Extension) for examining selected text from web pages using the OpenAI Moderation API. This extension integrates with the Chrome context menu and provides a side panel for displaying moderation results.
 
 ## Table of Contents
 

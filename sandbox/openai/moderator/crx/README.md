@@ -27,10 +27,17 @@ To use the extension, you need to set your OpenAI API key in the extension's own
 4. In the "OpenAI API Key" field, enter your valid OpenAI API key.
 5. Click the "Save" button to store the API key.
 
-Screenshots:
-![Chrome Extensions Page With Moderator Extension Loaded](ext1.png)
-![Settings Link in Moderator Extension Settings Page](ext2.png)
+Here is what you should see in the chrome://extensions page as well as where to click to get to the Options page where you need to set the OpenAI API Key up:
 
+   <p align="center">
+   <kbd>
+   <img src="ext1.png" alt="Chrome Extensions Page With Moderator Extension Loaded" width="400">
+   </kbd>
+   &nbsp;&nbsp;
+   <kbd>
+   <img src="ext2.png" alt="Settings Link in Moderator Extension Settings Page" width="400">
+   </kbd>
+   </p>
 
 #### Security of API Key
 

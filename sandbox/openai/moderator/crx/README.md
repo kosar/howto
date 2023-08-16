@@ -39,6 +39,14 @@ Here is what you should see in the chrome://extensions page as well as where to 
    </kbd>
    </p>
 
+The Options page is where you can set the API Key. Here is what it should look like. Just paste or type in your key and hit Save. It won't give you any confirmation, this is experimental code, come on now :).  Rest assured it saved the key and if you want to be double sure open the service worker console and it will announce the updated key value as you Save it. That debug output will go away eventually, this is all early stuff [todo]. 
+
+   <p align="center">
+   <kbd>
+   <img src="ext3.png" alt="OpenAI API Key Setting" width="400">
+   </kbd>
+
+
 #### Security of API Key
 
 The OpenAI API key is stored securely using Chrome's `chrome.storage.sync` API. This means that the key is stored locally on your machine and is not accessible to websites or other extensions. It is used only by the extension to communicate with the OpenAI API. When you uninstall the extension the key will be removed from local storage and you will need to enter it again in the options menu as described above. 

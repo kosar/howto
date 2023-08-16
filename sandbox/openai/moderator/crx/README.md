@@ -70,7 +70,7 @@ Follow these steps to test the extension with the sample content:
 3. Select the sample text using your mouse to highlight it.
 4. Right-click on the selected text to open the context menu.
 5. In the context menu, click on the "Process with Moderator" option.
-6. Open the Side Panel in Chrome by clicking on the Side Panel icon in the upper right part of the browser. From there you will need to select "Moderator Extension" from the drop down in order to see the output of this extension's side panel handlers. It should look something like (![this](image.png))
+6. Open the Side Panel in Chrome by clicking on the Side Panel icon in the upper right part of the browser. From there you will need to select "Moderator Extension" from the drop down in order to see the output of this extension's side panel handlers. ![Drop Down and Moderator Panel](image.png)
 7. In the side panel, you should see the selected text displayed along with the categories and scores obtained from the OpenAI Moderations API.
 
 You can compare the results from the extension with the values in the OpenAI examples to confirm that the models are generally working as one would expect. 

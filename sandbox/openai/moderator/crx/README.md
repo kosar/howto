@@ -5,8 +5,8 @@ The Moderator Chrome Extension is an experimentation tool (implemented as a Chro
 ## Table of Contents
 
 - [Installation](#installation)
-- [Usage](#usage)
 - [Setting Options](#setting-options)
+- [Usage](#usage)
 - [Theory of Operation](#theory-of-operation)
 
 ## Installation
@@ -27,7 +27,7 @@ To use the extension, you need to set your OpenAI API key in the extension's own
 4. In the "OpenAI API Key" field, enter your valid OpenAI API key.
 5. Click the "Save" button to store the API key.
 
-### Security of API Key
+#### Security of API Key
 
 The OpenAI API key is stored securely using Chrome's `chrome.storage.sync` API. This means that the key is stored locally on your machine and is not accessible to websites or other extensions. It is used only by the extension to communicate with the OpenAI API. When you uninstall the extension the key will be removed from local storage and you will need to enter it again in the options menu as described above. 
 

@@ -59,6 +59,22 @@ The Moderator Extension leverages Chrome's context menu and side panel capabilit
 - If a valid OpenAI API key is provided, the script calls the `callModerationAPI` function using the `fetch` API.
 - The moderation result is then displayed in the side panel, showing the categories and scores returned by the API.
 
+## Example Moderation using the Extension
+
+To demonstrate the capabilities of the Moderator Chrome Extension, you can test it using OpenAI's sample content provided in their [Moderations API documentation](https://platform.openai.com/docs/api-reference/moderations/create). On this page, you'll find a sample "input" content that you can use to see how the extension moderates and displays the results.
+
+Follow these steps to test the extension with the sample content:
+
+1. Visit the [OpenAI Moderations API documentation](https://platform.openai.com/docs/api-reference/moderations/create).
+2. On the documentation page, find the sample "input" content provided.
+3. Select the sample text using your mouse to highlight it.
+4. Right-click on the selected text to open the context menu.
+5. In the context menu, click on the "Process with Moderator" option.
+6. Open the Side Panel in Chrome by clicking on the Side Panel icon in the upper right part of the browser. From there you will need to select "Moderator Extension" from the drop down in order to see the output of this extension's side panel handlers. It should look something like (![this](image.png))
+7. In the side panel, you should see the selected text displayed along with the categories and scores obtained from the OpenAI Moderations API.
+
+You can compare the results from the extension with the values in the OpenAI examples to confirm that the models are generally working as one would expect. 
+
 ## APIs Used in this Extension
 
 The Moderator Chrome Extension utilizes several Chrome Extension APIs to provide its functionality:

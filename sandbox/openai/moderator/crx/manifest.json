@@ -3,7 +3,7 @@
   "name": "Moderator Extension",
   "version": "1.0",
   "description": "Moderator Chrome Extension",
-  "permissions": ["storage"],
+  "permissions": ["storage", "contextMenus"],
   "options_page": "options.html",
   "background": {
     "service_worker": "background.js"

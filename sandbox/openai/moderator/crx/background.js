@@ -10,22 +10,26 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
 });
 
 // Create a context menu item
-chrome.contextMenus.create({
+function setupContextMenu() {
+  chrome.contextMenus.create({
   id: "processText",
   title: "Process with Moderator",
   contexts: ["selection"] // Show the menu only when text is selected
+  });
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  setupContextMenu();
 });
 
-// Handle context menu item click event
-chrome.contextMenus.onClicked.addListener(function(info, tab) {
-  if (info.menuItemId === "processText") {
-    const selectedText = info.selectionText;
-    console.log("Selected text:", selectedText);
-    //TBD from here (get setting)    
-
-    chrome.storage.sync.get('openai_api_key', function (data) {
-      console.log(data.openai_api_key);
+// Send a message to the side panel with the selected text and openai_api_key value
+chrome.contextMenus.onClicked.addListener((data) => {
+  const selectedText = data.selectionText;
+  chrome.storage.sync.get('openai_api_key', function(storageData) {
+    const openaiApiKey = storageData.openai_api_key;
+    chrome.runtime.sendMessage({ 
+      name: 'update-side-panel', 
+      data: { selectedText: selectedText, openai_api_key: openaiApiKey }
     });
-    
-  }
+  });
 });

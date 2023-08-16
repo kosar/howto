@@ -1,3 +1,5 @@
 sandbox/openai/moderator/.DS_Store
 chrome-extensions-samples-main/
 sandbox/openai/.DS_Store
+sandbox/openai/moderator/crx/.env.ignore
+sandbox/.DS_Store

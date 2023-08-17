@@ -2,6 +2,10 @@
 
 This guide will walk you through the process of setting up and running a Google Apps Script to scan travel-related emails, extract confirmation data, and populate a Google Sheets spreadsheet.
 
+### Problem Solved: Simplifying Travel Confirmation Tracking
+
+The Travel Email Scanner script provides an automated solution for tracking travel confirmations from various sources. It addresses the challenge of manually searching through emails to find important travel details, such as confirmation numbers and travel dates. By utilizing specific search queries and intelligent data extraction techniques, the script streamlines the process of aggregating and organizing travel-related information into a single, easily accessible Google Sheets spreadsheet. This solution saves time, reduces manual effort, and ensures that essential travel details are always at your fingertips.
+
 ### Step 1: Create a New Google Sheets Spreadsheet
 
 1. Open Google Drive (https://drive.google.com).

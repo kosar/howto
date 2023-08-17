@@ -71,12 +71,16 @@ In some cases, extracting specific data from complex email formats may require i
 
 4. **Integrate the Code**: Once satisfied with the generated code, you can integrate it into your Apps Script. Create a new function similar to the Priceline example function. Replace the example regular expression and field extraction logic with the generated code.
 
-By following these steps, you can harness the power of AI to handle complex regular expressions and streamline the process of extending the script's functionality to handle intricate email formats. This approach allows you to adapt the script to evolving email structures without delving deeply into the complexities of regular expression crafting.
+By following these steps, you can handle complex regular expressions and streamline the process of extending the script's functionality to handle intricate email formats. This approach allows you to adapt the script to evolving email structures without delving deeply into the complexities of regular expression crafting.
 
 # Code
 
 ### Understanding the Code Flow and Field Extraction
 
 The script's main function, `scanTravelEmails`, follows a structured flow to scan emails, extract confirmation data, and populate the Google Sheets spreadsheet. It starts by defining search queries to identify relevant emails. These queries are used to fetch threads of emails from Gmail. Within each thread, individual messages are looped through to extract sender names, subjects, bodies, and dates. The `getConfirmationNumber` function utilizes regular expressions to extract confirmation numbers from the subject or body of the email. For more complex cases, such as Priceline emails, the specialized function `getPricelineConfirmationNumber` is used, which employs a distinct regular expression to extract confirmation details such as check-in and check-out dates from the email body. This extracted data is then organized into a data structure and finally sorted by date before being populated in the "Summary" sheet.
+
+### Access the Code
+
+You can find the complete Apps Script code for the Travel Email Scanner in the [`TravelScanner.gs`](TravelScanner.gs) file in this GitHub repository. This code includes the functions for scanning travel-related emails, extracting confirmation data, and populating the Google Sheets spreadsheet. It is all in one file now, but could be modularized in future revisions. This is all a hobby, let's not go overboard with the optimization too early, I say! 
 
 **Note:** This script may require modifications based on specific email formats and the structure of the confirmation data.

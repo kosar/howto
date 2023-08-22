@@ -15,6 +15,7 @@ function scanTravelEmails() {
     "from:united.com Receipt for Confirmation newer_than:" + SEARCH_DAYS + "d",
     "no-reply@navan.com is confirmed newer_than:" + SEARCH_DAYS + "d",
     "from:costcotravel.com costco travel: booking newer_than:" + SEARCH_DAYS + "d",
+    'from:delta "your flight receipt" newer_than:' + SEARCH_DAYS + "d",
     // Add more search queries here
   ];
 
@@ -41,8 +42,9 @@ function scanTravelEmails() {
         var date = message.getDate();
         var confirmationNumber = ""
         if (subject.includes('priceline itinerary')) {
-          console.log('Trying priceline parser ... ')
           confirmationNumber = getPricelineConfirmationNumber(body)
+        } else if (subject.includes('Your Flight Receipt') && senderName.includes('delta')){
+          confirmationNumber = get_confirmation_number_delta_receipt(body)
         }else {
           confirmationNumber = getConfirmationNumber(body) || getConfirmationNumber(subject); // Try both body and subject
         }
@@ -114,6 +116,19 @@ function isValidUrl(url) {
   } catch (error) {
     return false;
   }
+}
+function get_confirmation_number_delta_receipt(emailBody) {
+    const confirmationRegex = /CONFIRMATION #:\s*([A-Z0-9]+)/;
+
+    const confirmationMatch = emailBody.match(confirmationRegex);
+
+    if (!confirmationMatch) {
+        return null; // Return null if confirmation number is not found
+    }
+
+    const confirmationNumber = confirmationMatch[1];
+
+    return confirmationNumber;
 }
 
 function getPricelineConfirmationNumber(body_of_email) {

@@ -1,5 +1,5 @@
 // Set the number of days for the search parameter
-const SEARCH_DAYS = 100;
+const SEARCH_DAYS = 300;
 
 function scanTravelEmails() {
   Logger.log("Scanning for travel emails...");
@@ -16,6 +16,7 @@ function scanTravelEmails() {
     "no-reply@navan.com is confirmed newer_than:" + SEARCH_DAYS + "d",
     "from:costcotravel.com costco travel: booking newer_than:" + SEARCH_DAYS + "d",
     'from:delta "your flight receipt" newer_than:' + SEARCH_DAYS + "d",
+    'from:alaska "Confirmation Letter" newer_than:' + SEARCH_DAYS + "d",
     // Add more search queries here
   ];
 
@@ -45,6 +46,9 @@ function scanTravelEmails() {
           confirmationNumber = getPricelineConfirmationNumber(body)
         } else if (subject.includes('Your Flight Receipt') && senderName.includes('delta')){
           confirmationNumber = get_confirmation_number_delta_receipt(body)
+        } else if (subject.includes('Confirmation Letter') && senderName.includes('Alaska')){
+          confirmationNumber = get_confirmation_number_alaska_receipt (body)
+          console.log('Alaska special parser')
         }else {
           confirmationNumber = getConfirmationNumber(body) || getConfirmationNumber(subject); // Try both body and subject
         }
@@ -117,6 +121,21 @@ function isValidUrl(url) {
     return false;
   }
 }
+
+function get_confirmation_number_alaska_receipt(emailBody) {
+    const confirmationRegex = /Confirmation code:\s*([A-Z0-9]+)/;
+
+    const confirmationMatch = emailBody.match(confirmationRegex);
+
+    if (!confirmationMatch) {
+        return null; // Return null if confirmation number is not found
+    }
+
+    const confirmationNumber = confirmationMatch[1];
+
+    return confirmationNumber;
+}
+
 function get_confirmation_number_delta_receipt(emailBody) {
     const confirmationRegex = /CONFIRMATION #:\s*([A-Z0-9]+)/;
 

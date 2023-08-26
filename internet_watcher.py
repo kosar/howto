@@ -179,7 +179,7 @@ def log_arguments(args):
     for arg, value in vars(args).items():
         logger.info(f"{arg}: {value}")
 
-def main(interval, moving_average_records, threshold_percentage):
+def main(interval, moving_average_records, threshold_percentage, monitor_only):
     script_directory = os.getcwd()
     csv_filename = os.path.join(script_directory, f"{os.path.splitext(os.path.basename(__file__))[0]}.csv")
 
@@ -189,57 +189,90 @@ def main(interval, moving_average_records, threshold_percentage):
     log_arguments(args)
     
     while True:
-        # Run the speed test and get the timestamp, download speed, and upload speed
-        timestamp, download_speed, upload_speed = run_speed_test()
+        if monitor_only:
+            # Run the speed test 3 times and calculate the average
+            download_speeds = []
+            upload_speeds = []
+            for _ in range(3):
+                timestamp, download_speed, upload_speed = run_speed_test()
+                download_speeds.append(download_speed)
+                upload_speeds.append(upload_speed)
+                time.sleep(15)  # Delay between speed tests
+            
+            avg_download_speed = sum(download_speeds) / len(download_speeds)
+            avg_upload_speed = sum(upload_speeds) / len(upload_speeds)
 
-        if download_speed is not None and upload_speed is not None:
-            # Create a list with the results and timestamp
-            data = [timestamp.strftime('%Y-%m-%d %H:%M:%S'), download_speed, upload_speed]
+            # Create a list with the average results and timestamp
+            timestamp = datetime.datetime.now()
+            avg_data = [timestamp.strftime('%Y-%m-%d %H:%M:%S'), avg_download_speed, avg_upload_speed]
 
-            # Write the results to the CSV file
-            write_to_csv(csv_filename, data)
+            # Write the average results to the CSV file
+            write_to_csv(csv_filename, avg_data)
 
-            # Emit log messages with the file location and test speed
-            logger.info(f"Internet Speed Test - Date: {data[0]}, Download Speed: {download_speed:.0f} Mbps, Upload Speed: {upload_speed:.0f} Mbps")  # Precision set to 2 decimal places
-            print(f"Internet Speed Test - Date: {data[0]}, Download Speed: {download_speed:.0f} Mbps, Upload Speed: {upload_speed:.0f} Mbps")  # Precision set to 2 decimal places
-
-            # Calculate the moving average
-            download_avg, upload_avg = calculate_moving_average(csv_filename, moving_average_records)
-
-            if download_avg is not None and upload_avg is not None:
-                # Check if the latest speed test results deviate from the average by more than the threshold percentage
-                download_diff = abs(download_speed - download_avg) / download_avg * 100
-                upload_diff = abs(upload_speed - upload_avg) / upload_avg * 100
-
-                if download_diff > threshold_percentage or upload_diff > threshold_percentage:
-                    logger.warning(f"Significant deviation from moving average - Download: {download_diff:.2f}%, Upload: {upload_diff:.2f}%")
-                    # You can add your alerting mechanism here
-                    try:
-                        # Get the CSV file path to attach it to the email
-                        csv_file_path = os.path.join(script_directory, f"{os.path.splitext(os.path.basename(__file__))[0]}.csv")
-
-                        # Include the interesting metric in the email subject
-                        subject = f"Speed Alert2 - D:{download_diff:.2f}% U:{upload_diff:.2f}%"
-                        
-                        # Find max values for upload and download in the last `moving_average_records` entries
-                        with open(csv_filename, 'r', newline='') as file:
-                            reader = csv.DictReader(file)
-                            download_values = [float(row['Download Speed (Mbps)']) for row in reader]
-                        max_download = max(download_values[-moving_average_records:])
-                        
-                        with open(csv_filename, 'r', newline='') as file:
-                            reader = csv.DictReader(file)
-                            upload_values = [float(row['Upload Speed (Mbps)']) for row in reader]
-                        max_upload = max(upload_values[-moving_average_records:])
-                        
-                        message_body = f"D: {download_speed:.2f} Mbps (Max: {max_download:.2f}), U: {upload_speed:.2f} Mbps (Max: {max_upload:.2f})\n"
-                        send_email(subject, message_body, attachment_path=csv_file_path)
-                    except Exception as e:
-                        logger.warning(f"Error during email alert: {e}")
+            # Emit log messages with the file location and average speeds
+            logger.info(f"Internet Speed Test - Date: {avg_data[0]}, Average Download Speed: {avg_data[1]:.2f} Mbps, Average Upload Speed: {avg_data[2]:.2f} Mbps")
+            print(f"Internet Speed Test - Date: {avg_data[0]}, Average Download Speed: {avg_data[1]:.2f} Mbps, Average Upload Speed: {avg_data[2]:.2f} Mbps")
+            try:
+                # Include the average speeds in the email subject
+                subject = f"Monitor D:{avg_download_speed:.2f} Mbps U:{avg_upload_speed:.2f} Mbps"
+                message_body = f"Average Download Speed: {avg_download_speed:.2f} Mbps\nAverage Upload Speed: {avg_upload_speed:.2f} Mbps\n"
+                send_email(subject, message_body, attachment_path=csv_filename)
+                
+            except Exception as e:
+                logger.warning(f"Error during email alert: {e}")
+                print (f"Error during email alert: {e}")
 
         else:
-            logger.warning("Speed test failed. Skipping CSV update.")
-            print ("Speed test failed. Skipping CSV update.")
+            # Run the speed test and get the timestamp, download speed, and upload speed
+            timestamp, download_speed, upload_speed = run_speed_test()
+
+            if download_speed is not None and upload_speed is not None:
+                # Create a list with the results and timestamp
+                data = [timestamp.strftime('%Y-%m-%d %H:%M:%S'), download_speed, upload_speed]
+
+                # Write the results to the CSV file
+                write_to_csv(csv_filename, data)
+
+                # Emit log messages with the file location and test speed
+                logger.info(f"Internet Speed Test - Date: {data[0]}, Download Speed: {download_speed:.0f} Mbps, Upload Speed: {upload_speed:.0f} Mbps")  # Precision set to 2 decimal places
+                print(f"Internet Speed Test - Date: {data[0]}, Download Speed: {download_speed:.0f} Mbps, Upload Speed: {upload_speed:.0f} Mbps")  # Precision set to 2 decimal places
+
+                # Calculate the moving average
+                download_avg, upload_avg = calculate_moving_average(csv_filename, moving_average_records)
+
+                if download_avg is not None and upload_avg is not None:
+                    # Check if the latest speed test results deviate from the average by more than the threshold percentage
+                    download_diff = abs(download_speed - download_avg) / download_avg * 100
+                    upload_diff = abs(upload_speed - upload_avg) / upload_avg * 100
+
+                    if download_diff > threshold_percentage or upload_diff > threshold_percentage:
+                        logger.warning(f"Significant deviation from moving average - Download: {download_diff:.2f}%, Upload: {upload_diff:.2f}%")
+                        # You can add your alerting mechanism here
+                        try:
+                            # Get the CSV file path to attach it to the email
+                            csv_file_path = os.path.join(script_directory, f"{os.path.splitext(os.path.basename(__file__))[0]}.csv")
+
+                            # Include the interesting metric in the email subject
+                            subject = f"Speed Alert2 - D:{download_diff:.2f}% U:{upload_diff:.2f}%"
+                            
+                            # Find max values for upload and download in the last `moving_average_records` entries
+                            with open(csv_filename, 'r', newline='') as file:
+                                reader = csv.DictReader(file)
+                                download_values = [float(row['Download Speed (Mbps)']) for row in reader]
+                            max_download = max(download_values[-moving_average_records:])
+                            
+                            with open(csv_filename, 'r', newline='') as file:
+                                reader = csv.DictReader(file)
+                                upload_values = [float(row['Upload Speed (Mbps)']) for row in reader]
+                            max_upload = max(upload_values[-moving_average_records:])
+                            
+                            message_body = f"D: {download_speed:.2f} Mbps (Max: {max_download:.2f}), U: {upload_speed:.2f} Mbps (Max: {max_upload:.2f})\n"
+                            send_email(subject, message_body, attachment_path=csv_file_path)
+                        except Exception as e:
+                            logger.warning(f"Error during email alert: {e}")
+            else:
+                logger.warning("Speed test failed. Skipping CSV update.")
+                print ("Speed test failed. Skipping CSV update.")
 
         # Sleep for the specified interval (in seconds)
         time.sleep(interval)
@@ -259,6 +292,7 @@ if __name__ == "__main__":
     parser.add_argument('--interval', type=int, default=3600, help='Interval in seconds for the speed test loop.')
     parser.add_argument('--moving-average-records', type=int, default=5, help='Number of records to consider for moving average calculation.')
     parser.add_argument('--threshold-percentage', type=float, default=30, help='Threshold percentage for alert generation.')
+    parser.add_argument('--monitor-only', action='store_true', help='Run the script in monitor-only mode without comparing to moving averages.')
     args = parser.parse_args()
 
     # Use the script's directory to create the CSV file
@@ -267,5 +301,4 @@ if __name__ == "__main__":
     # Write the header row if the file does not exist
     write_header_if_not_exists(csv_filename)
 
-    main(args.interval, args.moving_average_records, args.threshold_percentage)
-
+    main(args.interval, args.moving_average_records, args.threshold_percentage, args.monitor_only)

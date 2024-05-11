@@ -17,6 +17,7 @@ function scanTravelEmails() {
     "from:costcotravel.com costco travel: booking newer_than:" + SEARCH_DAYS + "d",
     'from:delta "your flight receipt" newer_than:' + SEARCH_DAYS + "d",
     'from:alaska "Confirmation Letter" newer_than:' + SEARCH_DAYS + "d",
+    'from:(aa.com) subject:(Your trip confirmation) "confirmation code" newer_than:' + SEARCH_DAYS + "d",
     // Add more search queries here
   ];
 
@@ -122,6 +123,18 @@ function isValidUrl(url) {
   }
 }
 
+function getAmericanAirlinesConfirmationNumber(body) {
+  const confirmationRegex = /Confirmation code:\s*([A-Z0-9]+)/;
+  const confirmationMatch = body.match(confirmationRegex);
+
+  if (!confirmationMatch) {
+    return null; // Return null if confirmation number is not found
+  }
+
+  const confirmationNumber = confirmationMatch[1];
+  return confirmationNumber;
+}
+
 function get_confirmation_number_alaska_receipt(emailBody) {
     const confirmationRegex = /Confirmation code:\s*([A-Z0-9]+)/;
 
@@ -196,6 +209,13 @@ function getConfirmationNumber(text) {
   if (matches && matches.length >= 3) {
     return matches[2].trim();
   }
+  
+  // Check for American Airlines confirmation number
+  const americanAirlinesConfirmationNumber = getAmericanAirlinesConfirmationNumber(text);
+  if (americanAirlinesConfirmationNumber) {
+    return americanAirlinesConfirmationNumber;
+  }
+  
   return null;
 }
 

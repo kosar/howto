@@ -35,6 +35,30 @@ To add support for new email senders or confirmation email formats, follow these
 
 3. **Update the `getConfirmationNumber` function**: In the `getConfirmationNumber` function, add a call to your new extraction function. This ensures that the script will attempt to extract the confirmation number using your custom method if the general extraction fails.
 
+### Confirmation Numbers 
+
+The code includes several functions to extract confirmation numbers from different airline email formats. Here's how they are used:
+
+1. The `scanTravelEmails` function is the main entry point that iterates through the email threads matching the search queries.
+
+2. Inside the loop that processes each email message, the code attempts to extract the confirmation number using different methods:
+
+   a. If the email subject contains 'priceline itinerary', it calls the `getPricelineConfirmationNumber(body)` function to extract the confirmation number from the email body.
+
+   b. If the email subject contains 'Your Flight Receipt' and the sender name includes 'delta', it calls the `get_confirmation_number_delta_receipt(body)` function to extract the confirmation number from the email body.
+
+   c. If the email subject contains 'Confirmation Letter' and the sender name includes 'Alaska', it calls the `get_confirmation_number_alaska_receipt(body)` function to extract the confirmation number from the email body.
+
+   d. If none of the above conditions match, it calls the `getConfirmationNumber(body)` function, which attempts to extract the confirmation number from the email body or subject using a general pattern matching approach.
+
+3. The `getConfirmationNumber(body)` function has been updated to include a specific check for American Airlines confirmation numbers. After attempting to extract the confirmation number using the general pattern matching approach, it calls the `getAmericanAirlinesConfirmationNumber(body)` function.
+
+4. The `getAmericanAirlinesConfirmationNumber(body)` function uses a regular expression to extract the confirmation code from the email body specifically for American Airlines emails.
+
+5. If the `getAmericanAirlinesConfirmationNumber(body)` function finds a confirmation number, it returns that value. Otherwise, the `getConfirmationNumber(body)` function falls back to the general extraction logic.
+
+In summary, the code first attempts to use airline-specific functions to extract confirmation numbers from known email formats (Priceline, Delta, Alaska Airlines). If those fail, it falls back to the general `getConfirmationNumber` function, which includes a specific check for American Airlines confirmation numbers using the `getAmericanAirlinesConfirmationNumber` function. This approach allows the code to handle various email formats while also providing a dedicated extraction method for American Airlines emails.
+
 ### Known Design Issues
 
 1. **Hardcoded Search Queries**: The search queries are hardcoded in the script, which can make it difficult to maintain and update as new email formats or senders emerge. A more flexible approach would be to store the search queries in a separate data source (e.g., a Google Sheet or a configuration file) and load them dynamically.

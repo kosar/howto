@@ -139,11 +139,20 @@
         console.log('Form submitted with:', { name, email, startTime, endTime });
 
         try {
+          // Encode the parameters into a JSON object
+          const params = {
+            name,
+            email,
+            startTime,
+            endTime
+          };
+          const paramsString = JSON.stringify(params);
+
           const resultString = await new Promise((resolve, reject) => {
             google.script.run
               .withSuccessHandler(resolve)
               .withFailureHandler(reject)
-              .createCalendarEvent(name, email, startTime, endTime);
+              .createCalendarEvent(paramsString);
           });
 
           console.log('Calendar event creation result string:', resultString);
@@ -163,7 +172,7 @@
           handleError(error);
         }
       });
-
+      
       // Test function
       async function testCreateCalendarEvent() {
         const name = 'Test User';
@@ -171,17 +180,31 @@
         const startTime = new Date(2024, 4, 27, 19, 0, 0); // May 27, 2024, 7:00 PM
         const endTime = new Date(2024, 4, 27, 20, 0, 0); // May 27, 2024, 8:00 PM
 
-        const result = await google.script.run.createCalendarEvent(name, email, startTime, endTime);
-        console.log('Test result:', result);
+        try {
+          const resultString = await new Promise((resolve, reject) => {
+            google.script.run
+              .withSuccessHandler(resolve)
+              .withFailureHandler(reject)
+              .testCreateCalendarEvent();
+          });
 
-        if (result) {
-          console.log('Event ID:', result.id);
-          console.log('Event Title:', result.title);
-          console.log('Event Start Time:', result.startTime);
-          console.log('Event End Time:', result.endTime);
-          console.log('Event Description:', result.description);
-        } else {
-          console.log('Failed to create event');
+          console.log('Test result (JSON string):', resultString);
+
+          if (resultString) {
+            const result = JSON.parse(resultString);
+            console.log('Test result (parsed object):', result);
+
+            console.log('Event ID:', result.id);
+            console.log('Event Title:', result.title);
+            console.log('Event Start Time:', result.startTime);
+            console.log('Event End Time:', result.endTime);
+            console.log('Event Description:', result.description);
+          } else {
+            console.log('Failed to create event');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          handleError(error);
         }
       }
     </script>

@@ -43,9 +43,12 @@ async function isTimeSlotAvailable(calendar, startTime, endTime) {
   }
 }
 
-
-async function createCalendarEvent(name, email, startTime, endTime) {
+async function createCalendarEvent(paramsString) {
   try {
+    // Parse the parameters from the JSON string
+    const params = JSON.parse(paramsString);
+    const { name, email, startTime, endTime } = params;
+
     let calendarId = PropertiesService.getScriptProperties().getProperty('CALENDAR_ID');
     let calendar = CalendarApp.getCalendarById(calendarId);
 
@@ -93,19 +96,18 @@ async function createCalendarEvent(name, email, startTime, endTime) {
 async function testCreateCalendarEvent() {
   const name = 'Test User';
   const email = 'test@example.com';
-  const startTime = new Date(2024, 4, 27, 19, 0, 0); // May 27, 2024, 9:00 AM
-  const endTime = new Date(2024, 4, 27, 20, 0, 0); // May 27, 2024, 10:00 AM
+  const startTime = new Date(2024, 4, 27, 19, 0, 0); // May 27, 2024, 7:00 PM
+  const endTime = new Date(2024, 4, 27, 20, 0, 0); // May 27, 2024, 8:00 PM
 
   const result = await createCalendarEvent(name, email, startTime, endTime);
-  console.log('Test result:', result);
 
   if (result) {
-    console.log('Event ID:', result.id);
-    console.log('Event Title:', result.title);
-    console.log('Event Start Time:', result.startTime);
-    console.log('Event End Time:', result.endTime);
-    console.log('Event Description:', result.description);
+    // Convert the result object to a JSON string
+    const resultString = JSON.stringify(result);
+    console.log('Test result (JSON string):', resultString);
+    return resultString;
   } else {
     console.log('Failed to create event');
+    return null;
   }
 }

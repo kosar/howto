@@ -49,16 +49,20 @@ async function createCalendarEvent(paramsString) {
     const params = JSON.parse(paramsString);
     const { name, email, startTime, endTime } = params;
 
+    // Convert the ISO strings back to Date objects
+    const startTimeDate = new Date(startTime);
+    const endTimeDate = new Date(endTime);
+
     let calendarId = PropertiesService.getScriptProperties().getProperty('CALENDAR_ID');
     let calendar = CalendarApp.getCalendarById(calendarId);
 
-    console.log('Checking availability for:', { startTime, endTime });
+    console.log('Checking availability for:', { startTimeDate, endTimeDate });
 
-    if (await isTimeSlotAvailable(calendar, startTime, endTime)) {
+    if (await isTimeSlotAvailable(calendar, startTimeDate, endTimeDate)) {
       let event = await calendar.createEvent(
         `Booking: ${name}`,
-        startTime,
-        endTime,
+        startTimeDate,
+        endTimeDate,
         { description: `Booked by: ${email}` }
       );
 
@@ -83,7 +87,7 @@ async function createCalendarEvent(paramsString) {
         return null;
       }
     } else {
-      console.log(`Unable to create event. Time slot from ${startTime} to ${endTime} is not available.`);
+      console.log(`Unable to create event. Time slot from ${startTimeDate} to ${endTimeDate} is not available.`);
       return null;
     }
   } catch (error) {
@@ -98,8 +102,15 @@ async function testCreateCalendarEvent() {
   const email = 'test@example.com';
   const startTime = new Date(2024, 4, 27, 19, 0, 0); // May 27, 2024, 7:00 PM
   const endTime = new Date(2024, 4, 27, 20, 0, 0); // May 27, 2024, 8:00 PM
+  const params = {
+    name,
+    email,
+    startTime,
+    endTime
+  };
+  const paramsString = JSON.stringify(params);
 
-  const result = await createCalendarEvent(name, email, startTime, endTime);
+  const result = await createCalendarEvent(paramsString);
 
   if (result) {
     // Convert the result object to a JSON string

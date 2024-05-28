@@ -40,3 +40,30 @@ async function isTimeSlotAvailable(calendar, startTime, endTime) {
     throw error;
   }
 }
+
+function createCalendarEvent(name, email, startTime, endTime) {
+  try {
+    let calendarId = PropertiesService.getScriptProperties().getProperty('CALENDAR_ID');
+    let calendar = CalendarApp.getCalendarById(calendarId);
+
+    console.log('Checking availability for:', { startTime, endTime });
+
+    if (isTimeSlotAvailable(calendar, startTime, endTime)) {
+      let event = calendar.createEvent(
+        `Booking: ${name}`,
+        startTime,
+        endTime,
+        { description: `Booked by: ${email}` }
+      );
+
+      console.log('Calendar event created:', event);
+      return event;
+    } else {
+      console.log(`Unable to create event. Time slot from ${startTime} to ${endTime} is not available.`);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error in createCalendarEvent:', error);
+    throw error;
+  }
+}

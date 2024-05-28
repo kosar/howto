@@ -54,9 +54,18 @@
       button[type="submit"]:hover {
         background-color: #45a049;
       }
+
+      #successBanner {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        display: none;
+      }
     </style>
   </head>
   <body>
+    <div id="successBanner">Appointment booked successfully!</div>
     <h1>Booking Form</h1>
     <form id="bookingForm">
       <label for="name">Name:</label>
@@ -71,8 +80,6 @@
       <button type="submit">Book Appointment</button>
     </form>
     
-    <button onclick="testCreateCalendarEvent()">Test Create Calendar Event</button>
-    
     <script>
       function handleError(error) {
         console.error('Error:', error);
@@ -82,6 +89,24 @@
       console.log('HTML file loaded');
 
       async function getAvailableSlots() {
+        try {
+          const slotsString = await new Promise((resolve, reject) => {
+            google.script.run
+              .withSuccessHandler(resolve)
+              .withFailureHandler(reject)
+              .getAvailableSlots();
+          });
+          console.log('Slots string received:', slotsString);
+          const slots = JSON.parse(slotsString);
+          console.log('Slots parsed:', slots);
+          displayAvailableSlots(slots);
+        } catch (error) {
+          console.error('Error:', error);
+          handleError(error);
+        }
+      }
+
+      async function refreshAvailableSlots() {
         try {
           const slotsString = await new Promise((resolve, reject) => {
             google.script.run
@@ -155,15 +180,16 @@
               .createCalendarEvent(paramsString);
           });
 
-          console.log('Calendar event creation result string:', resultString);
-
           const result = JSON.parse(resultString);
 
-          console.log('Calendar event creation result:', result);
-
           if (result) {
-            alert('Appointment booked successfully!');
+            showSuccessBanner();
             bookingForm.reset(); // Reset the form
+            setTimeout(() => {
+              hideSuccessBanner();
+              refreshAvailableSlots();
+            }, 3000);
+            // setTimeout(() => reloadPage(), 3000); // Reload the page after 3 seconds
           } else {
             alert('Failed to book the appointment. Please try again.');
           }
@@ -173,39 +199,18 @@
         }
       });
 
-      // Test function
-      async function testCreateCalendarEvent() {
-        const name = 'Test User';
-        const email = 'test@example.com';
-        const startTime = new Date(2024, 4, 27, 19, 0, 0); // May 27, 2024, 7:00 PM
-        const endTime = new Date(2024, 4, 27, 20, 0, 0); // May 27, 2024, 8:00 PM
+      function showSuccessBanner() {
+        const successBanner = document.getElementById('successBanner');
+        successBanner.style.display = 'block';
+      }
 
-        try {
-          const resultString = await new Promise((resolve, reject) => {
-            google.script.run
-              .withSuccessHandler(resolve)
-              .withFailureHandler(reject)
-              .testCreateCalendarEvent();
-          });
+      function hideSuccessBanner() {
+        const successBanner = document.getElementById('successBanner');
+        successBanner.style.display = 'none';
+      }
 
-          console.log('Test result (JSON string):', resultString);
-
-          if (resultString) {
-            const result = JSON.parse(resultString);
-            console.log('Test result (parsed object):', result);
-
-            console.log('Event ID:', result.id);
-            console.log('Event Title:', result.title);
-            console.log('Event Start Time:', result.startTime);
-            console.log('Event End Time:', result.endTime);
-            console.log('Event Description:', result.description);
-          } else {
-            console.log('Failed to create event');
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          handleError(error);
-        }
+      function reloadPage() {
+        window.location.reload();
       }
     </script>
   </body>

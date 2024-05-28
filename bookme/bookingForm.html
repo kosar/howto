@@ -143,8 +143,8 @@
           const params = {
             name,
             email,
-            startTime,
-            endTime
+            startTime: startTime.toISOString(), // Convert Date to ISO string
+            endTime: endTime.toISOString() // Convert Date to ISO string
           };
           const paramsString = JSON.stringify(params);
 
@@ -172,7 +172,7 @@
           handleError(error);
         }
       });
-      
+
       // Test function
       async function testCreateCalendarEvent() {
         const name = 'Test User';

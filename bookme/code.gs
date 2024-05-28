@@ -67,21 +67,7 @@ async function createCalendarEvent(paramsString) {
       );
 
       if (event) {
-        console.log('Calendar event created successfully');
-        console.log('Event ID:', event.getId());
-        console.log('Event Title:', event.getTitle());
-        console.log('Event Start Time:', event.getStartTime());
-        console.log('Event End Time:', event.getEndTime());
-        console.log('Event Description:', event.getDescription());
-
-        // Return a simplified object with the necessary event information
-        return {
-          id: event.getId(),
-          title: event.getTitle(),
-          startTime: event.getStartTime(),
-          endTime: event.getEndTime(),
-          description: event.getDescription()
-        };
+        return JSON.stringify(event);
       } else {
         console.error('Failed to create calendar event');
         return null;

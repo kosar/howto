@@ -122,6 +122,41 @@
 
       // Fetch available slots when the page loads
       window.onload = getAvailableSlots;
+
+      // Handle form submission
+      const bookingForm = document.getElementById('bookingForm');
+      bookingForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent the default form submission
+
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const selectedSlot = document.getElementById('timeSlot').value.split(',');
+        const startTime = new Date(selectedSlot[0]);
+        const endTime = new Date(selectedSlot[1]);
+
+        console.log('Form submitted with:', { name, email, startTime, endTime });
+
+        try {
+          const result = await new Promise((resolve, reject) => {
+            google.script.run
+              .withSuccessHandler(resolve)
+              .withFailureHandler(reject)
+              .createCalendarEvent(name, email, startTime, endTime);
+          });
+
+          console.log('Calendar event creation result:', result);
+
+          if (result) {
+            alert('Appointment booked successfully!');
+            bookingForm.reset(); // Reset the form
+          } else {
+            alert('Failed to book the appointment. Please try again.');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          handleError(error);
+        }
+      });
     </script>
   </body>
 </html>

@@ -2,6 +2,9 @@
 <html>
   <head>
     <base target="_top">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -74,6 +77,9 @@
       <label for="email">Email:</label>
       <input type="email" id="email" name="email" required>
       
+      <label for="selectedDate">Date:</label>
+      <input type="text" id="selectedDate" name="selectedDate" required>
+      
       <label for="timeSlot">Available Time Slots:</label>
       <select id="timeSlot" name="timeSlot" required></select>
       
@@ -81,6 +87,10 @@
     </form>
     
     <script>
+      $(function() {
+        $("#selectedDate").datepicker();
+      });
+
       function handleError(error) {
         console.error('Error:', error);
         alert(`Error: ${error}`);
@@ -88,13 +98,14 @@
 
       console.log('HTML file loaded');
 
-      async function getAvailableSlots() {
+      async function getAvailableSlots(dateString) {
+        console.log('Getting slots... for this dateString: ', dateString);
         try {
           const slotsString = await new Promise((resolve, reject) => {
             google.script.run
               .withSuccessHandler(resolve)
               .withFailureHandler(reject)
-              .getAvailableSlots();
+              .getAvailableSlots(dateString);
           });
           console.log('Slots string received:', slotsString);
           const slots = JSON.parse(slotsString);
@@ -106,32 +117,19 @@
         }
       }
 
-      async function refreshAvailableSlots() {
-        try {
-          const slotsString = await new Promise((resolve, reject) => {
-            google.script.run
-              .withSuccessHandler(resolve)
-              .withFailureHandler(reject)
-              .getAvailableSlots();
-          });
-          console.log('Slots string received:', slotsString);
-          const slots = JSON.parse(slotsString);
-          console.log('Slots parsed:', slots);
-          displayAvailableSlots(slots);
-        } catch (error) {
-          console.error('Error:', error);
-          handleError(error);
-        }
-      }
+      $("#selectedDate").change(function() {
+        const selectedDate = $(this).val();
+        getAvailableSlots(selectedDate);
+      })
 
       function displayAvailableSlots(slots) {
         console.log('In displayAvailableSlots', slots);
         let slotList = document.getElementById('timeSlot');
         slotList.innerHTML = ''; // Clear previous options
         slots.forEach(slot => {
-          const startTime = formatTime(slot.start);
-          const endTime = formatTime(slot.end);
-          const slotText = `${startTime} - ${endTime}`;
+          const startTime = new Date(slot.start);
+          const endTime = new Date(slot.end);
+          const slotText = `${formatTime(startTime)} - ${formatTime(endTime)}`;
           const option = document.createElement('option');
           option.value = `${slot.start},${slot.end}`;
           option.textContent = slotText;
@@ -148,7 +146,11 @@
       }
 
       // Fetch available slots when the page loads
-      window.onload = getAvailableSlots;
+      window.onload = function() {
+        const today = new Date();
+        console.log('Getting slots for today: ', today.toISOString())
+        getAvailableSlots(today.toISOString());
+      };
 
       // Handle form submission
       const bookingForm = document.getElementById('bookingForm');
@@ -157,11 +159,12 @@
 
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
+        const selectedDate = document.getElementById('selectedDate').value;
         const selectedSlot = document.getElementById('timeSlot').value.split(',');
         const startTime = new Date(selectedSlot[0]);
         const endTime = new Date(selectedSlot[1]);
 
-        console.log('Form submitted with:', { name, email, startTime, endTime });
+        console.log('Form submitted with:', { name, email, selectedDate, startTime, endTime });
 
         try {
           // Encode the parameters into a JSON object
@@ -169,7 +172,8 @@
             name,
             email,
             startTime: startTime.toISOString(), // Convert Date to ISO string
-            endTime: endTime.toISOString() // Convert Date to ISO string
+            endTime: endTime.toISOString(), // Convert Date to ISO string
+            selectedDate: selectedDate // Pass the selected date as a string
           };
           const paramsString = JSON.stringify(params);
 
@@ -189,7 +193,6 @@
               hideSuccessBanner();
               refreshAvailableSlots();
             }, 3000);
-            // setTimeout(() => reloadPage(), 3000); // Reload the page after 3 seconds
           } else {
             alert('Failed to book the appointment. Please try again.');
           }
@@ -209,9 +212,12 @@
         successBanner.style.display = 'none';
       }
 
-      function reloadPage() {
-        window.location.reload();
+      function refreshAvailableSlots() {
+        const selectedDate = document.getElementById('selectedDate').value;
+        const dateObj = new Date(selectedDate);
+        getAvailableSlots(dateObj.toISOString());
       }
+
     </script>
   </body>
 </html>

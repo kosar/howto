@@ -3,11 +3,13 @@ function doGet(e) {
     .setTitle('Booking Form');
 }
 
-async function getAvailableSlots(date = new Date()) {
+async function getAvailableSlots(dateString) {
   try {
     let calendarId = PropertiesService.getScriptProperties().getProperty('CALENDAR_ID');
     let calendar = CalendarApp.getCalendarById(calendarId);
     let availableSlots = [];
+
+    const date = new Date(dateString);
 
     // Loop through each hour/time slot you want to check
     for (let startTime = 9, endTime = 17; startTime < endTime; startTime++) {
@@ -17,14 +19,14 @@ async function getAvailableSlots(date = new Date()) {
       end.setHours(startTime + 1, 0, 0, 0);
 
       if (await isTimeSlotAvailable(calendar, start, end)) {
-        availableSlots.push({ start: start, end: end });
+        availableSlots.push({
+          start: start.toISOString(),
+          end: end.toISOString()
+        });
       }
     }
 
-    console.log('Available slots:', availableSlots);
-    const slotsString = JSON.stringify(availableSlots);
-    console.log('Slots string:', slotsString);
-    return slotsString;
+    return JSON.stringify(availableSlots);
   } catch (error) {
     console.error('Error in getAvailableSlots:', error);
     throw error;
@@ -47,11 +49,12 @@ async function createCalendarEvent(paramsString) {
   try {
     // Parse the parameters from the JSON string
     const params = JSON.parse(paramsString);
-    const { name, email, startTime, endTime } = params;
+    const { name, email, startTime, endTime, selectedDate } = params;
 
     // Convert the ISO strings back to Date objects
     const startTimeDate = new Date(startTime);
     const endTimeDate = new Date(endTime);
+    const selectedDateObj = new Date(selectedDate);
 
     let calendarId = PropertiesService.getScriptProperties().getProperty('CALENDAR_ID');
     let calendar = CalendarApp.getCalendarById(calendarId);
@@ -79,32 +82,5 @@ async function createCalendarEvent(paramsString) {
   } catch (error) {
     console.error('Error in createCalendarEvent:', error);
     throw error;
-  }
-}
-
-// Test function
-async function testCreateCalendarEvent() {
-  const name = 'Test User';
-  const email = 'test@example.com';
-  const startTime = new Date(2024, 4, 27, 19, 0, 0); // May 27, 2024, 7:00 PM
-  const endTime = new Date(2024, 4, 27, 20, 0, 0); // May 27, 2024, 8:00 PM
-  const params = {
-    name,
-    email,
-    startTime,
-    endTime
-  };
-  const paramsString = JSON.stringify(params);
-
-  const result = await createCalendarEvent(paramsString);
-
-  if (result) {
-    // Convert the result object to a JSON string
-    const resultString = JSON.stringify(result);
-    console.log('Test result (JSON string):', resultString);
-    return resultString;
-  } else {
-    console.log('Failed to create event');
-    return null;
   }
 }

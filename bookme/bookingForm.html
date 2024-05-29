@@ -93,13 +93,23 @@
 
       function handleError(error) {
         console.error('Error:', error);
-        alert(`Error: ${error}`);
+        $('#successBanner').hide();
+        // update the inner html of that div to the string of the error here
+        $('#successBanner').html(`Error: ${error}`);
+        // fade out the banner after 3 seconds
+        $('#successBanner').show();
+        $('#successBanner').fadeOut(3000);
       }
-
-      console.log('HTML file loaded');
 
       async function getAvailableSlots(dateString) {
         console.log('Getting slots... for this dateString: ', dateString);
+        const date = new Date(dateString);
+        // Let's do some defensive programmimg here to be sure the dateString is valid and will work with the APIs
+        if (isNaN(date.getTime())) {
+          handleError('Invalid date');
+          return;
+        }
+
         try {
           const slotsString = await new Promise((resolve, reject) => {
             google.script.run
@@ -107,9 +117,8 @@
               .withFailureHandler(reject)
               .getAvailableSlots(dateString);
           });
-          console.log('Slots string received:', slotsString);
           const slots = JSON.parse(slotsString);
-          console.log('Slots parsed:', slots);
+          console.log('Slots parsed:', slots, " (", slots.length, ")");
           displayAvailableSlots(slots);
         } catch (error) {
           console.error('Error:', error);
@@ -119,6 +128,7 @@
 
       $("#selectedDate").change(function() {
         const selectedDate = $(this).val();
+        console.log('Selected date: ', selectedDate);
         getAvailableSlots(selectedDate);
       })
 
@@ -147,9 +157,8 @@
 
       // Fetch available slots when the page loads
       window.onload = function() {
-        const today = new Date();
-        console.log('Getting slots for today: ', today.toISOString())
-        getAvailableSlots(today.toISOString());
+        console.log("Page load: getting available slots ...");
+        refreshAvailableSlots();
       };
 
       // Handle form submission
@@ -164,7 +173,7 @@
         const startTime = new Date(selectedSlot[0]);
         const endTime = new Date(selectedSlot[1]);
 
-        console.log('Form submitted with:', { name, email, selectedDate, startTime, endTime });
+        // console.log('Form submitted with:', { name, email, selectedDate, startTime, endTime });
 
         try {
           // Encode the parameters into a JSON object
@@ -194,7 +203,10 @@
               refreshAvailableSlots();
             }, 3000);
           } else {
-            alert('Failed to book the appointment. Please try again.');
+            //create an error here
+            error_create = new Error("'Failed to book the appointment. Please try again.")
+            console.error(error_create);
+            handleError(error_create);
           }
         } catch (error) {
           console.error('Error:', error);
@@ -217,6 +229,8 @@
         const formattedDate = today.toISOString().slice(0, 10);
         console.log('refreshAvailableSlots: Getting slots for today:', formattedDate);
         getAvailableSlots(formattedDate);
+        // set the Date value in the Date: element in the HTML above now
+        document.getElementById('selectedDate').value = formattedDate;
       }
 
     </script>

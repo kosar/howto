@@ -212,10 +212,11 @@
         successBanner.style.display = 'none';
       }
 
-      function refreshAvailableSlots() {
-        const selectedDate = document.getElementById('selectedDate').value;
-        const dateObj = new Date(selectedDate);
-        getAvailableSlots(dateObj.toISOString());
+      function refreshAvailableSlots(dateSelected) {
+        const today = new Date();
+        const formattedDate = today.toISOString().slice(0, 10);
+        console.log('refreshAvailableSlots: Getting slots for today:', formattedDate);
+        getAvailableSlots(formattedDate);
       }
 
     </script>

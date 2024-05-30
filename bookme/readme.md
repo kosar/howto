@@ -88,6 +88,26 @@ By following this approach, the code ensures that data can be safely and accurat
 
 The serialization and deserialization process, while necessary, added complexity to the codebase and required careful handling of data conversions. However, it allowed for seamless communication between the client-side and server-side components, enabling the creation of a functional and user-friendly booking form web application.
 
+`google.script.run` is an asynchronous client-side JavaScript API provided by Google Apps Script that allows communication between the client-side (browser) and server-side (Google Apps Script) code. Here's a more detailed explanation of how it works and its expected behavior:
+
+1. **Purpose**: `google.script.run` enables you to call server-side Google Apps Script functions from client-side JavaScript code running in an HTML service. This allows you to leverage the server-side capabilities of Google Apps Script, such as interacting with Google services (e.g., Google Calendar, Gmail, Sheets) or performing complex computations, while still providing a rich user interface in the browser.
+
+2. **Asynchronous Execution**: When you call a server-side function using `google.script.run`, the call is made asynchronously. This means that the client-side code continues executing without waiting for the server-side function to complete. The server-side function runs independently, and its result is handled through callback functions specified on the client-side.
+
+3. **Callback Functions**: `google.script.run` provides two methods to set callback functions: `withSuccessHandler` and `withFailureHandler`. These methods allow you to specify functions that will be executed when the server-side function completes successfully or encounters an error, respectively.
+
+   - `withSuccessHandler(function)`: Sets a callback function to be executed when the server-side function returns successfully. The return value from the server-side function is passed as an argument to this callback function.
+   - `withFailureHandler(function)`: Sets a callback function to be executed if the server-side function throws an exception or encounters an error. The error object is passed as an argument to this callback function.
+
+4. **User Objects**: `google.script.run` also provides a `withUserObject(object)` method that allows you to pass an object as a second argument to the success and failure callback functions. This "user object" can be used to provide additional context or data to the callback functions, enabling them to respond accordingly.
+
+5. **Serialization and Deserialization**: When calling a server-side function using `google.script.run`, any arguments passed to the function must be serializable to JSON. Similarly, the return value from the server-side function must also be serializable to JSON. This is because the communication between the client and server happens over a JSON-based protocol.
+
+6. **Expected Behavior**: When you call a server-side function using `google.script.run`, the client-side code should continue executing without blocking or waiting for the server-side function to complete. The success or failure callback functions will be invoked asynchronously when the server-side function finishes executing, allowing you to handle the result or error accordingly.
+
+It's important to note that `google.script.run` is designed to work within the context of an HTML service in Google Apps Script. It provides a way to bridge the gap between client-side and server-side code, enabling you to build rich web applications that leverage the capabilities of both environments.[1][4]
+
+
 ### HTML File (`bookingForm.html`)
 
 The HTML file provides the user interface for the booking form. It includes the following elements:

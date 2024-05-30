@@ -18,11 +18,11 @@ To use this web application, follow these steps:
 
 1. Create a new Google Apps Script project in your Google Drive.
 2. Copy the contents of the `code.gs` file and paste it into the Code.gs file in your Google Apps Script project.
-3. In the Google Apps Script project, go to `File > Project Properties > Script Properties` and add a new property with the key `CALENDAR_ID` and the value of the calendar ID you want to use for booking appointments.
-4. Deploy the project as a web app by going to `Publish > Deploy as web app`. Follow the prompts to configure the deployment settings.
-5. Copy the web app URL provided after deployment.
-6. Create an HTML file (e.g., `bookingForm.html`) and paste the contents of the `bookingForm.html` file from this repository.
-7. Deploy the script (Deploy->New Deploy with defaults). Go to the url link provided after the deployment succeeds. 
+3. Create an HTML file (e.g., `bookingForm.html`) and paste the contents of the `bookingForm.html` file from this repository.
+4. In the Google Apps Script project, go to `File > Project Properties > Script Properties` and add a new property with the key `CALENDAR_ID` and the value of the calendar ID you want to use for booking appointments.
+5. Deploy the project as a web app by going to `Publish > Deploy as web app`. Follow the prompts to configure the deployment settings.
+6. Copy the web app URL provided after deployment.
+7. Go to the url link provided after the deployment succeeds. 
 8. Fill out the form and watch the invite appear on your calendar! 
 
 ## Usage

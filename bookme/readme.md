@@ -1,5 +1,7 @@
 # Booking Form Web App with Google Apps Script
 
+![Screenshot](form.jpg)
+
 ## Description
 
 This is a web application built using Google Apps Script that allows users to book appointments by selecting an available time slot from a calendar. The application consists of an HTML file (`bookingForm.html`) that serves as the user interface, and a Google Apps Script file (`code.gs`) that handles the backend logic. It is designed to work within the Google Apps environment as a script with a simple web form user interface. I wrote this to work around the silly gap in Google Calendar to export free/busy information to allow anyone to book time on a caledar without using a paid service (or a watered down one that fixes open time slots versus using your calendar's actual free/busy). If that feature exists natively in Google Calendar, all this code will be just an example and not a useful hack. 

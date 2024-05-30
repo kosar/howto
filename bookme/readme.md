@@ -43,6 +43,51 @@ To use this web application, follow these steps:
 
 The web application consists of two main components: the HTML file (`bookingForm.html`) and the Google Apps Script file (`code.gs`).
 
+## Detailed Theory of Operation
+
+The Booking Form Web App is built using Google Apps Script, which allows for communication between client-side JavaScript (running in the browser) and server-side code (running on Google's servers). This communication is facilitated by the `google.script.run` API, which enables asynchronous calls from the client to the server.
+
+### Client-Server Communication
+
+The HTML file (`bookingForm.html`) contains the user interface and client-side JavaScript code. When the user interacts with the form, certain events trigger calls to server-side functions using `google.script.run`. Here's how the communication works:
+
+1. **Retrieving Available Time Slots**:
+   - When the user selects a date in the date picker, the `getAvailableSlots` function is called on the client-side.
+   - This function makes an asynchronous call to the server-side `getAvailableSlots` function using `google.script.run`.
+   - The server-side function retrieves the available time slots for the selected date from the specified calendar.
+   - The available slots are returned as a JSON string to the client-side.
+   - The client-side code parses the JSON string and displays the available time slots in the dropdown menu.
+
+2. **Creating a Calendar Event**:
+   - When the user submits the booking form, an event listener is triggered on the client-side.
+   - The form data (name, email, selected date, and time slot) is collected and encoded into a JSON string.
+   - An asynchronous call is made to the server-side `createCalendarEvent` function using `google.script.run`, passing the JSON string as a parameter.
+   - The server-side function parses the JSON string, checks the time slot availability, and creates a new calendar event if the time slot is available.
+   - The server-side function returns a JSON string representing the created event or `null` if the event creation fails.
+   - The client-side code handles the response, displaying a success banner or an error message accordingly.
+
+### Object Serialization Challenges
+
+One of the challenges faced during the development of this web app was the serialization and deserialization of objects when passing data between the client and server. Google Apps Script's `google.script.run` API requires data to be passed as JSON strings, which means that objects cannot be directly passed along this interface.
+
+To overcome this limitation, the code employs the following techniques:
+
+1. **Serializing Objects to JSON Strings**:
+   - On the client-side, before making a call to a server-side function, the relevant data (e.g., form data) is encoded into a JSON string using `JSON.stringify`.
+   - This JSON string is then passed as a parameter to the server-side function using `google.script.run`.
+
+2. **Deserializing JSON Strings to Objects**:
+   - On the server-side, the received JSON string is parsed back into an object using `JSON.parse`.
+   - The server-side function can then work with the deserialized object as needed.
+
+3. **Returning Data as JSON Strings**:
+   - When the server-side function needs to return data to the client-side, it first converts the data into a JSON string using `JSON.stringify`.
+   - This JSON string is then returned to the client-side, where it is parsed back into an object using `JSON.parse`.
+
+By following this approach, the code ensures that data can be safely and accurately transferred between the client and server, despite the limitations imposed by the `google.script.run` API.
+
+The serialization and deserialization process, while necessary, added complexity to the codebase and required careful handling of data conversions. However, it allowed for seamless communication between the client-side and server-side components, enabling the creation of a functional and user-friendly booking form web application.
+
 ### HTML File (`bookingForm.html`)
 
 The HTML file provides the user interface for the booking form. It includes the following elements:
@@ -73,14 +118,5 @@ When the user submits the booking form, the `createCalendarEvent` function is ca
 ## To Do / Unfinished
 
 
-Citations:
-[1] https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css
-[2] https://code.jquery.com/jquery-3.6.0.min.js
-[3] https://code.jquery.com/ui/1.13.0/jquery-ui.min.js
-[4] https://stackoverflow.com/questions/33276368/booking-form-with-conditional-form-action-based-on-select-option
-[5] https://www.youtube.com/watch?v=DLJKBWgG1PA
-[6] https://stackoverflow.com/questions/12081390/view-or-test-readme-files-md-in-a-browser-prior-to-pushing-to-an-online-reposit
-[7] https://developers.google.com/apps-script/guides/web
-[8] https://script.gs/how-to-debug-a-web-app-deployed-using-google-apps-script/
 
 

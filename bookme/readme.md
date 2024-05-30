@@ -70,9 +70,8 @@ The HTML file interacts with the Google Apps Script server using AJAX requests. 
 
 When the user submits the booking form, the `createCalendarEvent` function is called with the provided form data. If the booking is successful, a success banner is displayed, and the form is reset. If an error occurs during the booking process, an error message is displayed.
 
-## Conclusion
+## To Do / Unfinished
 
-This web application demonstrates the integration of Google Apps Script with an HTML user interface to create a functional booking system. Users can easily book appointments by selecting available time slots from a calendar, and the application handles the creation of calendar events seamlessly. The modular design and separation of concerns between the HTML and Google Apps Script files make it easy to maintain and extend the application as needed.
 
 Citations:
 [1] https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css
@@ -85,51 +84,3 @@ Citations:
 [8] https://script.gs/how-to-debug-a-web-app-deployed-using-google-apps-script/
 
 
-# Appendix: Hosting the Booking Form on Your Own Domain
-
-To host the booking form on your own domain, you'll need to follow these additional steps:
-
-1. **Set up a web server**: You'll need a web server to host the HTML file (`bookingForm.html`). You can use a hosting service like GitHub Pages, Netlify, or any other hosting provider of your choice.
-
-2. **Upload the HTML file**: Upload the `bookingForm.html` file to your web server. Make sure the file is accessible via a URL.
-
-3. **Update the script source**: In the `bookingForm.html` file, locate the following line:
-
-```html
-<script src="YOUR_WEB_APP_URL"></script>
-```
-
-Replace `YOUR_WEB_APP_URL` with the URL of your Google Apps Script web app deployment. This URL should be the same as the one you copied during the installation process (step 5 in the Installation section).
-
-4. **Configure CORS**: Since the HTML file is hosted on a different domain than the Google Apps Script web app, you'll need to configure Cross-Origin Resource Sharing (CORS) in your Google Apps Script project. Follow these steps:
-
-   - In the Google Apps Script editor, go to `Resources > Advanced Google services`.
-   - Enable the `Google Apps Script Web Application` service.
-   - Go back to the Code.gs file and add the following line at the top of the `doGet` function:
-
-     ```javascript
-     const corsOptions = {
-       headers: {
-         'Access-Control-Allow-Origin': '*'
-       }
-     };
-     ```
-
-   - Modify the `doGet` function to return the HTML output with the CORS options:
-
-     ```javascript
-     function doGet(e) {
-       return HtmlService.createHtmlOutputFromFile('bookingForm.html')
-         .setTitle('Booking Form')
-         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-         .addMetaTag('viewport', 'width=device-width, initial-scale=1')
-         .setFaviconUrl('https://ssl.gstatic.com/docs/script/images/favicon.ico')
-         .setResponseOptions(corsOptions);
-     }
-     ```
-
-5. **Access the booking form**: You can now access the booking form by navigating to the URL where you hosted the `bookingForm.html` file on your web server.
-
-By following these steps, you'll be able to host the booking form on your own domain and integrate it with the Google Apps Script backend. This setup allows you to have a custom domain for your booking form while still leveraging the functionality provided by Google Apps Script.
-
-Note: Ensure that you have properly configured the CORS settings and the script source URL to avoid any cross-origin issues when accessing the booking form from your domain.

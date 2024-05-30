@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a web application built using Google Apps Script that allows users to book appointments by selecting an available time slot from a calendar. The application consists of an HTML file (`bookingForm.html`) that serves as the user interface, and a Google Apps Script file (`code.gs`) that handles the backend logic.
+This is a web application built using Google Apps Script that allows users to book appointments by selecting an available time slot from a calendar. The application consists of an HTML file (`bookingForm.html`) that serves as the user interface, and a Google Apps Script file (`code.gs`) that handles the backend logic. It is designed to work within the Google Apps environment as a script with a simple web form user interface. I wrote this to work around the silly gap in Google Calendar to export free/busy information to allow anyone to book time on a caledar without using a paid service (or a watered down one that fixes open time slots versus using your calendar's actual free/busy). If that feature exists natively in Google Calendar, all this code will be just an example and not a useful hack. 
 
 ## Features
 
@@ -22,17 +22,12 @@ To use this web application, follow these steps:
 4. Deploy the project as a web app by going to `Publish > Deploy as web app`. Follow the prompts to configure the deployment settings.
 5. Copy the web app URL provided after deployment.
 6. Create an HTML file (e.g., `bookingForm.html`) and paste the contents of the `bookingForm.html` file from this repository.
-7. Replace the `<script>` tag in the HTML file with the following line, replacing `YOUR_WEB_APP_URL` with the URL you copied in step 5:
-
-```html
-<script src="YOUR_WEB_APP_URL"></script>
-```
-
-8. Open the `bookingForm.html` file in a web browser to access the booking form.
+7. Deploy the script (Deploy->New Deploy with defaults). Go to the url link provided after the deployment succeeds. 
+8. Fill out the form and watch the invite appear on your calendar! 
 
 ## Usage
 
-1. Open the `bookingForm.html` file in a web browser.
+1. Open the `bookingForm.html` file in a web browser (use the URL provided after deployment succeeds in the script editor)
 2. Enter your name and email address in the respective fields.
 3. Select a date from the date picker.
 4. Choose an available time slot from the dropdown menu.

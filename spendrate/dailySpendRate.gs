@@ -36,12 +36,31 @@ function calculateSpendingRate(sheetName = 'Transactions') {
     var spendingRates = [];
     var totalSpending = 0;
     var startDate = new Date(Object.keys(dailySpending)[0]);
+    var currentDate = new Date();
+    var daysInYear = 365;
 
     Object.keys(dailySpending).forEach((date, index) => {
       totalSpending += dailySpending[date];
-      var daysSinceStart = (new Date(date) - startDate) / (1000 * 60 * 60 * 24) + 1;
-      var currentRate = totalSpending / daysSinceStart;
-      spendingRates.push([new Date(date), dailySpending[date], currentRate]);
+      var dateObj = new Date(date);
+      var daysSinceStart = (dateObj - startDate) / (1000 * 60 * 60 * 24) + 1;
+
+      // Calculate the trailing 30-day rate
+      var trailingStartDate = new Date(dateObj);
+      trailingStartDate.setDate(trailingStartDate.getDate() - 30);
+      var trailingSpending = 0;
+      var trailingDays = 0;
+      for (var i = 0; i <= 30; i++) {
+        var checkDate = new Date(trailingStartDate);
+        checkDate.setDate(trailingStartDate.getDate() + i);
+        if (dailySpending[checkDate.toDateString()]) {
+          trailingSpending += dailySpending[checkDate.toDateString()];
+          trailingDays++;
+        }
+      }
+      var trailingRate = trailingDays ? trailingSpending / trailingDays : 0;
+
+      var annualizedRate = trailingRate * daysInYear;
+      spendingRates.push([dateObj, dailySpending[date], trailingRate, annualizedRate]);
     });
 
     // Create or update the spending rates sheet
@@ -54,8 +73,8 @@ function calculateSpendingRate(sheetName = 'Transactions') {
       ratesSheet = ss.insertSheet(ratesSheetName);
     }
 
-    ratesSheet.getRange(1, 1, 1, 3).setValues([["Date", "Total Spending", "Spending Rate (per day)"]]);
-    ratesSheet.getRange(2, 1, spendingRates.length, 3).setValues(spendingRates);
+    ratesSheet.getRange(1, 1, 1, 4).setValues([["Date", "Total Spending", "Trailing 30-Day Rate", "Annualized Rate"]]);
+    ratesSheet.getRange(2, 1, spendingRates.length, 4).setValues(spendingRates);
 
     // Create or update the chart
     var charts = ratesSheet.getCharts();
@@ -65,9 +84,18 @@ function calculateSpendingRate(sheetName = 'Transactions') {
 
     var chart = ratesSheet.newChart()
       .setChartType(Charts.ChartType.LINE)
-      .addRange(ratesSheet.getRange(1, 1, spendingRates.length + 1, 3))
+      .addRange(ratesSheet.getRange(1, 1, spendingRates.length + 1, 1))
+      .addRange(ratesSheet.getRange(1, 2, spendingRates.length + 1, 1))
+      .addRange(ratesSheet.getRange(1, 3, spendingRates.length + 1, 1))
+      .addRange(ratesSheet.getRange(1, 4, spendingRates.length + 1, 1))
       .setPosition(5, 5, 0, 0)
       .setOption('title', `Spending Rate Over Time - ${sheetName}`)
+      .setOption('legend.position', 'bottom')
+      .setOption('series', {
+        0: { labelInLegend: 'Total Spending' },
+        1: { labelInLegend: 'Trailing 30-Day Rate' },
+        2: { labelInLegend: 'Annualized Rate' }
+      })
       .build();
 
     ratesSheet.insertChart(chart);

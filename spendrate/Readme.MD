@@ -2,6 +2,17 @@
 
 This Google Apps Script calculates daily spending rates based on transaction data in a Google Sheet. It includes options to filter outliers and visualize spending trends over time.
 
+## Why Use This Tool?
+
+Managing personal or business finances requires a clear understanding of spending patterns. This tool provides detailed insights into your spending habits by calculating daily, trailing 90-day, and annualized spending rates. By accounting for infrequent and high-value transactions (outliers), the tool offers a more accurate prediction of your future spending. It helps you:
+
+- Identify unusual spending patterns.
+- Understand the impact of large transactions on your overall budget.
+- Make informed financial decisions based on historical data.
+- Visualize trends to forecast future spending more accurately.
+
+Whether you're managing a household budget or overseeing company expenses, this tool helps you gain control over your finances through data-driven insights.
+
 ## Setup
 
 ### Prerequisites
@@ -30,7 +41,6 @@ Before you begin, ensure you have the following:
    - Date: Should be in YYYY-MM-DD format.
    - Description: Description of the transaction.
    - Amount: Transaction amount. Negative values represent expenses.
-
    NOTE: This is the default format of transaction downloads in US banks such as Bank Of America's Download Transactions capability.
    You can safely import those downloads  into a sheet and then run this tool over that list of transactions.
 
@@ -79,6 +89,3 @@ Before you begin, ensure you have the following:
 ## Support
 
 For questions or issues, please [open an issue](https://github.com/kosar/howto/issues) in the GitHub repository.
-
----
-

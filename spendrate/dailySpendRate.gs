@@ -96,6 +96,7 @@ function calculateSpendingRate(sheetName = 'Transactions') {
       .setOption('series', {
         0: { labelInLegend: 'Total Spending' }
       })
+      .setOption('width', 800)
       .build();
 
     ratesSheet.insertChart(totalSpendingChart);
@@ -110,6 +111,7 @@ function calculateSpendingRate(sheetName = 'Transactions') {
       .setOption('series', {
         0: { labelInLegend: 'Trailing 90-Day Rate' }
       })
+      .setOption('width', 800)
       .build();
 
     ratesSheet.insertChart(trailingRateChart);
@@ -124,6 +126,7 @@ function calculateSpendingRate(sheetName = 'Transactions') {
       .setOption('series', {
         0: { labelInLegend: 'Annualized Rate' }
       })
+      .setOption('width', 800)
       .build();
 
     ratesSheet.insertChart(annualizedRateChart);
@@ -138,6 +141,7 @@ function calculateSpendingRate(sheetName = 'Transactions') {
       .setOption('series', {
         0: { labelInLegend: 'Cumulative Spending' }
       })
+      .setOption('width', 800)
       .build();
 
     ratesSheet.insertChart(cumulativeSpendingChart);

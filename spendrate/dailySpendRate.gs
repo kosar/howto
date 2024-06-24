@@ -76,29 +76,52 @@ function calculateSpendingRate(sheetName = 'Transactions') {
     ratesSheet.getRange(1, 1, 1, 4).setValues([["Date", "Total Spending", "Trailing 30-Day Rate", "Annualized Rate"]]);
     ratesSheet.getRange(2, 1, spendingRates.length, 4).setValues(spendingRates);
 
-    // Create or update the chart
+    // Create or update the charts
     var charts = ratesSheet.getCharts();
-    if (charts.length > 0) {
-      ratesSheet.removeChart(charts[0]);
-    }
+    charts.forEach(chart => ratesSheet.removeChart(chart));
 
-    var chart = ratesSheet.newChart()
+    var totalSpendingChart = ratesSheet.newChart()
       .setChartType(Charts.ChartType.LINE)
       .addRange(ratesSheet.getRange(1, 1, spendingRates.length + 1, 1))
       .addRange(ratesSheet.getRange(1, 2, spendingRates.length + 1, 1))
-      .addRange(ratesSheet.getRange(1, 3, spendingRates.length + 1, 1))
-      .addRange(ratesSheet.getRange(1, 4, spendingRates.length + 1, 1))
-      .setPosition(5, 5, 0, 0)
-      .setOption('title', `Spending Rate Over Time - ${sheetName}`)
+      .setPosition(5, 1, 0, 0)
+      .setOption('title', `Total Spending Over Time - ${sheetName}`)
       .setOption('legend.position', 'bottom')
       .setOption('series', {
-        0: { labelInLegend: 'Total Spending' },
-        1: { labelInLegend: 'Trailing 30-Day Rate' },
-        2: { labelInLegend: 'Annualized Rate' }
+        0: { labelInLegend: 'Total Spending' }
       })
       .build();
 
-    ratesSheet.insertChart(chart);
+    ratesSheet.insertChart(totalSpendingChart);
+
+    var trailingRateChart = ratesSheet.newChart()
+      .setChartType(Charts.ChartType.LINE)
+      .addRange(ratesSheet.getRange(1, 1, spendingRates.length + 1, 1))
+      .addRange(ratesSheet.getRange(1, 3, spendingRates.length + 1, 1))
+      .setPosition(25, 1, 0, 0)
+      .setOption('title', `Trailing 30-Day Rate Over Time - ${sheetName}`)
+      .setOption('legend.position', 'bottom')
+      .setOption('series', {
+        0: { labelInLegend: 'Trailing 30-Day Rate' }
+      })
+      .build();
+
+    ratesSheet.insertChart(trailingRateChart);
+
+    var annualizedRateChart = ratesSheet.newChart()
+      .setChartType(Charts.ChartType.LINE)
+      .addRange(ratesSheet.getRange(1, 1, spendingRates.length + 1, 1))
+      .addRange(ratesSheet.getRange(1, 4, spendingRates.length + 1, 1))
+      .setPosition(45, 1, 0, 0)
+      .setOption('title', `Annualized Rate Over Time - ${sheetName}`)
+      .setOption('legend.position', 'bottom')
+      .setOption('series', {
+        0: { labelInLegend: 'Annualized Rate' }
+      })
+      .build();
+
+    ratesSheet.insertChart(annualizedRateChart);
+
   } catch (error) {
     showError(`Error: ${error.message}`);
   }

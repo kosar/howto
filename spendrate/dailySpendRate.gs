@@ -80,11 +80,15 @@ function calculateSpendingRate(sheetName = 'Transactions') {
     var charts = ratesSheet.getCharts();
     charts.forEach(chart => ratesSheet.removeChart(chart));
 
+    // Calculate the position offsets
+    var numRows = spendingRates.length + 1; // Including header row
+    var numCols = 4; // Number of columns with data
+
     var totalSpendingChart = ratesSheet.newChart()
       .setChartType(Charts.ChartType.LINE)
-      .addRange(ratesSheet.getRange(1, 1, spendingRates.length + 1, 1))
-      .addRange(ratesSheet.getRange(1, 2, spendingRates.length + 1, 1))
-      .setPosition(5, 1, 0, 0)
+      .addRange(ratesSheet.getRange(1, 1, numRows, 1))
+      .addRange(ratesSheet.getRange(1, 2, numRows, 1))
+      .setPosition(1, numCols + 1, 0, 0) // Move to the right of the data
       .setOption('title', `Total Spending Over Time - ${sheetName}`)
       .setOption('legend.position', 'bottom')
       .setOption('series', {
@@ -96,9 +100,9 @@ function calculateSpendingRate(sheetName = 'Transactions') {
 
     var trailingRateChart = ratesSheet.newChart()
       .setChartType(Charts.ChartType.LINE)
-      .addRange(ratesSheet.getRange(1, 1, spendingRates.length + 1, 1))
-      .addRange(ratesSheet.getRange(1, 3, spendingRates.length + 1, 1))
-      .setPosition(25, 1, 0, 0)
+      .addRange(ratesSheet.getRange(1, 1, numRows, 1))
+      .addRange(ratesSheet.getRange(1, 3, numRows, 1))
+      .setPosition(25, numCols + 1, 0, 0) // Move to the right of the data
       .setOption('title', `Trailing 30-Day Rate Over Time - ${sheetName}`)
       .setOption('legend.position', 'bottom')
       .setOption('series', {
@@ -110,9 +114,9 @@ function calculateSpendingRate(sheetName = 'Transactions') {
 
     var annualizedRateChart = ratesSheet.newChart()
       .setChartType(Charts.ChartType.LINE)
-      .addRange(ratesSheet.getRange(1, 1, spendingRates.length + 1, 1))
-      .addRange(ratesSheet.getRange(1, 4, spendingRates.length + 1, 1))
-      .setPosition(45, 1, 0, 0)
+      .addRange(ratesSheet.getRange(1, 1, numRows, 1))
+      .addRange(ratesSheet.getRange(1, 4, numRows, 1))
+      .setPosition(45, numCols + 1, 0, 0) // Move to the right of the data
       .setOption('title', `Annualized Rate Over Time - ${sheetName}`)
       .setOption('legend.position', 'bottom')
       .setOption('series', {

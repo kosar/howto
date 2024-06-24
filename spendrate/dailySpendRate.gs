@@ -1,4 +1,12 @@
+// Define a global variable to store the outlier threshold
+var outlierThreshold = null;
+
 function getOutlierThreshold(sheet, percentile) {
+  // Check if outlierThreshold has already been calculated
+  if (outlierThreshold !== null) {
+    return outlierThreshold;
+  }
+
   var dataRange = sheet.getDataRange();
   var numRows = dataRange.getNumRows();
   var numCols = dataRange.getNumColumns();
@@ -19,8 +27,11 @@ function getOutlierThreshold(sheet, percentile) {
   // Calculate the index based on the percentile
   var index = Math.floor(amounts.length * (percentile / 100));
 
+  // Store the threshold amount in the global variable for caching
+  outlierThreshold = amounts[index];
+
   // Return the threshold amount
-  return amounts[index];
+  return outlierThreshold;
 }
 
 function calculateSpendingRate(sheetName = 'Transactions', ignoreOutliers = false, outlierPercentile = 95) {

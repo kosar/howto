@@ -31,6 +31,9 @@ Before you begin, ensure you have the following:
    - Description: Description of the transaction.
    - Amount: Transaction amount. Negative values represent expenses.
 
+   NOTE: This is the default format of transaction downloads in US banks such as Bank Of America's Download Transactions capability.
+   You can safely import those downloads  into a sheet and then run this tool over that list of transactions.
+
 3. **Open Google Apps Script Editor**:
 
    - In your Google Sheet, go to `Extensions` > `Apps Script`.

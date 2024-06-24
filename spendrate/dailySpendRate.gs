@@ -113,7 +113,8 @@ function calculateSpendingRate(sheetName = 'Transactions', ignoreOutliers = fals
     });
 
     // Create or update the spending rates sheet
-    var ratesSheetName = `${sheetName} - Spending Rates`;
+    var outlierInfo = ignoreOutliers ? `- OutlierFilterOn - ${outlierPercentile} - ${outlierThreshold}` : '';
+    var ratesSheetName = `${sheetName} - Spending Rates ${outlierInfo}`;
     var ratesSheet = ss.getSheetByName(ratesSheetName);
 
     if (ratesSheet) {

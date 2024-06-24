@@ -8,15 +8,20 @@ function calculateSpendingRate(sheetName = 'Transactions') {
       return;
     }
 
-    // Verify column structure
-    var headers = sheet.getRange(1, 1, 1, 3).getValues()[0];
-    if (headers[0] !== 'Date' || headers[1] !== 'Description' || headers[2] !== 'Amount') {
-      showError('Invalid column structure. Expected: Date, Description, Amount');
+    var data = sheet.getDataRange().getValues();
+
+    // Find the header row index
+    var headerRow = findHeaderRow(data);
+    if (headerRow === -1) {
+      showError('Header row not found. Expected: Date, Description, Amount');
       return;
     }
 
-    var data = sheet.getDataRange().getValues();
-    data.shift(); // Remove header row
+    // Process rows starting from immediately after the header row
+    var startRow = headerRow + 1;
+    var numRows = sheet.getLastRow() - startRow + 1;
+    var dataRange = sheet.getRange(startRow, 1, numRows, 3);
+    var data = dataRange.getValues();
 
     // Sort data by date
     data.sort((a, b) => new Date(a[0]) - new Date(b[0]));
@@ -96,7 +101,7 @@ function calculateSpendingRate(sheetName = 'Transactions') {
       .setOption('series', {
         0: { labelInLegend: 'Total Spending' }
       })
-      .setOption('width', 800)
+      .setOption('width', 1000) // Adjust width as needed
       .build();
 
     ratesSheet.insertChart(totalSpendingChart);
@@ -111,7 +116,7 @@ function calculateSpendingRate(sheetName = 'Transactions') {
       .setOption('series', {
         0: { labelInLegend: 'Trailing 90-Day Rate' }
       })
-      .setOption('width', 800)
+      .setOption('width', 1000) // Adjust width as needed
       .build();
 
     ratesSheet.insertChart(trailingRateChart);
@@ -126,7 +131,7 @@ function calculateSpendingRate(sheetName = 'Transactions') {
       .setOption('series', {
         0: { labelInLegend: 'Annualized Rate' }
       })
-      .setOption('width', 800)
+      .setOption('width', 1000) // Adjust width as needed
       .build();
 
     ratesSheet.insertChart(annualizedRateChart);
@@ -141,10 +146,13 @@ function calculateSpendingRate(sheetName = 'Transactions') {
       .setOption('series', {
         0: { labelInLegend: 'Cumulative Spending' }
       })
-      .setOption('width', 800)
+      .setOption('width', 1000) // Adjust width as needed
       .build();
 
     ratesSheet.insertChart(cumulativeSpendingChart);
+
+    // Show completion message if no errors occurred
+    showSuccessMessage();
 
   } catch (error) {
     showError(`Error: ${error.message}`);
@@ -157,6 +165,21 @@ function showError(message) {
     .setWidth(300)
     .setHeight(100);
   ui.showModelessDialog(htmlOutput, 'Error');
+}
+
+function showSuccessMessage() {
+  var ui = SpreadsheetApp.getUi();
+  ui.alert('Spending rate calculation complete!');
+}
+
+function findHeaderRow(data) {
+  // Function to find the row index of the header row
+  for (var i = 0; i < data.length; i++) {
+    if (data[i][0] === 'Date' && data[i][1] === 'Description' && data[i][2] === 'Amount') {
+      return i;
+    }
+  }
+  return -1; // Header row not found
 }
 
 function onOpen() {
@@ -182,7 +205,6 @@ function showSheetSelector() {
     var sheetName = response.getResponseText();
     if (sheetNames.includes(sheetName)) {
       calculateSpendingRate(sheetName);
-      ui.alert('Spending rate calculation complete!');
     } else {
       ui.alert(`Sheet "${sheetName}" not found.`);
     }

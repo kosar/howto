@@ -1,11 +1,35 @@
-function calculateSpendingRate(sheetName = 'Transactions') {
+function getOutlierThreshold(sheet, percentile) {
+  var dataRange = sheet.getDataRange();
+  var numRows = dataRange.getNumRows();
+  var numCols = dataRange.getNumColumns();
+  var values = dataRange.getValues();
+
+  // Extract amounts for analysis
+  var amounts = [];
+  for (var i = 1; i < numRows; i++) { // Start from 1 to skip header row
+    var amount = values[i][2]; // Assuming amount is in the third column (index 2)
+    if (typeof amount === 'number') { // Ensure it's a numeric value
+      amounts.push(Math.abs(amount)); // Store absolute value (ignoring negatives)
+    }
+  }
+
+  // Sort amounts in descending order
+  amounts.sort(function(a, b) { return b - a; });
+
+  // Calculate the index based on the percentile
+  var index = Math.floor(amounts.length * (percentile / 100));
+
+  // Return the threshold amount
+  return amounts[index];
+}
+
+function calculateSpendingRate(sheetName = 'Transactions', ignoreOutliers = false, outlierPercentile = 95) {
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(sheetName);
 
     if (!sheet) {
-      showError(`Sheet "${sheetName}" not found.`);
-      return;
+      throw new Error(`Sheet "${sheetName}" not found.`);
     }
 
     var data = sheet.getDataRange().getValues();
@@ -13,8 +37,7 @@ function calculateSpendingRate(sheetName = 'Transactions') {
     // Find the header row index
     var headerRow = findHeaderRow(data);
     if (headerRow === -1) {
-      showError('Header row not found. Expected: Date, Description, Amount');
-      return;
+      throw new Error('Header row not found. Expected: Date, Description, Amount');
     }
 
     // Process rows starting from immediately after the header row
@@ -32,11 +55,19 @@ function calculateSpendingRate(sheetName = 'Transactions') {
       var amount = row[2];
       if (amount < 0) {
         if (!dailySpending[date]) {
-          dailySpending[date] = 0;
+          dailySpending[date] = [];
         }
-        dailySpending[date] += Math.abs(amount);
+        dailySpending[date].push(Math.abs(amount));
       }
     });
+
+    // Optionally filter out outliers
+    if (ignoreOutliers) {
+      var outlierThreshold = getOutlierThreshold(sheet, outlierPercentile);
+      Object.keys(dailySpending).forEach(date => {
+        dailySpending[date] = dailySpending[date].filter(amount => amount < outlierThreshold);
+      });
+    }
 
     var spendingRates = [];
     var totalSpending = 0;
@@ -46,8 +77,8 @@ function calculateSpendingRate(sheetName = 'Transactions') {
     var daysInYear = 365;
 
     Object.keys(dailySpending).forEach((date, index) => {
-      totalSpending += dailySpending[date];
-      cumulativeSpending += dailySpending[date];
+      totalSpending += dailySpending[date].reduce((acc, val) => acc + val, 0);
+      cumulativeSpending += dailySpending[date].reduce((acc, val) => acc + val, 0);
       var dateObj = new Date(date);
       var daysSinceStart = (dateObj - startDate) / (1000 * 60 * 60 * 24) + 1;
 
@@ -60,14 +91,14 @@ function calculateSpendingRate(sheetName = 'Transactions') {
         var checkDate = new Date(trailingStartDate);
         checkDate.setDate(trailingStartDate.getDate() + i);
         if (dailySpending[checkDate.toDateString()]) {
-          trailingSpending += dailySpending[checkDate.toDateString()];
+          trailingSpending += dailySpending[checkDate.toDateString()].reduce((acc, val) => acc + val, 0);
           trailingDays++;
         }
       }
       var trailingRate = trailingDays ? trailingSpending / trailingDays : 0;
 
       var annualizedRate = trailingRate * daysInYear;
-      spendingRates.push([dateObj, dailySpending[date], trailingRate, annualizedRate, cumulativeSpending]);
+      spendingRates.push([dateObj, dailySpending[date].reduce((acc, val) => acc + val, 0), trailingRate, annualizedRate, cumulativeSpending]);
     });
 
     // Create or update the spending rates sheet
@@ -151,35 +182,27 @@ function calculateSpendingRate(sheetName = 'Transactions') {
 
     ratesSheet.insertChart(cumulativeSpendingChart);
 
-    // Show completion message if no errors occurred
-    showSuccessMessage();
-
+    SpreadsheetApp.getUi().alert('Spending rate calculation complete!');
   } catch (error) {
-    showError(`Error: ${error.message}`);
+    showError(error.message);
   }
-}
-
-function showError(message) {
-  var ui = SpreadsheetApp.getUi();
-  var htmlOutput = HtmlService.createHtmlOutput(`<p>${message}</p>`)
-    .setWidth(300)
-    .setHeight(100);
-  ui.showModelessDialog(htmlOutput, 'Error');
-}
-
-function showSuccessMessage() {
-  var ui = SpreadsheetApp.getUi();
-  ui.alert('Spending rate calculation complete!');
 }
 
 function findHeaderRow(data) {
-  // Function to find the row index of the header row
   for (var i = 0; i < data.length; i++) {
-    if (data[i][0] === 'Date' && data[i][1] === 'Description' && data[i][2] === 'Amount') {
+    var row = data[i];
+    if (row[0] === 'Date' && row[1] === 'Description' && row[2] === 'Amount') {
       return i;
     }
   }
-  return -1; // Header row not found
+  return -1;
+}
+
+function showError(message) {
+  var htmlOutput = HtmlService.createHtmlOutput(`<div style="color: red; font-size: 16px;">Error: ${message}</div>`)
+    .setWidth(300)
+    .setHeight(50);
+  SpreadsheetApp.getUi().showModelessDialog(htmlOutput, 'Error');
 }
 
 function onOpen() {
@@ -204,7 +227,19 @@ function showSheetSelector() {
   if (response.getSelectedButton() == ui.Button.OK) {
     var sheetName = response.getResponseText();
     if (sheetNames.includes(sheetName)) {
-      calculateSpendingRate(sheetName);
+      var responseIgnoreOutliers = ui.alert('Ignore Outliers?', ui.ButtonSet.YES_NO);
+      var ignoreOutliers = responseIgnoreOutliers == ui.Button.YES;
+      
+      if (ignoreOutliers) {
+        var responsePercentile = ui.prompt('Enter Percentile for Outliers (0-100)', 'Enter the percentile (e.g., 95)', ui.ButtonSet.OK_CANCEL);
+        var outlierPercentile = Number(responsePercentile.getResponseText());
+        if (isNaN(outlierPercentile) || outlierPercentile < 0 || outlierPercentile > 100) {
+          ui.alert('Invalid percentile entered. Using default (95%).');
+          outlierPercentile = 95;
+        }
+      }
+
+      calculateSpendingRate(sheetName, ignoreOutliers, outlierPercentile);
     } else {
       ui.alert(`Sheet "${sheetName}" not found.`);
     }

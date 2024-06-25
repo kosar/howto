@@ -86,11 +86,17 @@ function calculateSpendingRate(sheetName = 'Transactions', ignoreOutliers = fals
     var startDate = new Date(Object.keys(dailySpending)[0]);
     var currentDate = new Date();
     var daysInYear = 365;
+    var monthlySpending = {};
 
     Object.keys(dailySpending).forEach((date, index) => {
       totalSpending += dailySpending[date].reduce((acc, val) => acc + val, 0);
       cumulativeSpending += dailySpending[date].reduce((acc, val) => acc + val, 0);
       var dateObj = new Date(date);
+      var monthKey = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}`;
+      if (!monthlySpending[monthKey]) {
+        monthlySpending[monthKey] = 0;
+      }
+      monthlySpending[monthKey] += dailySpending[date].reduce((acc, val) => acc + val, 0);
       var daysSinceStart = (dateObj - startDate) / (1000 * 60 * 60 * 24) + 1;
 
       // Calculate the trailing 90-day rate with exponential decay
@@ -109,8 +115,15 @@ function calculateSpendingRate(sheetName = 'Transactions', ignoreOutliers = fals
       }
       var trailingRate = weightSum ? trailingSpending / weightSum : 0;
 
-      var annualizedRate = trailingRate * daysInYear;
-      spendingRates.push([dateObj, dailySpending[date].reduce((acc, val) => acc + val, 0), trailingRate, annualizedRate, cumulativeSpending]);
+      spendingRates.push([dateObj, dailySpending[date].reduce((acc, val) => acc + val, 0), trailingRate, cumulativeSpending]);
+    });
+
+    // Prepare monthly spending data for the chart
+    var monthlyRates = [];
+    Object.keys(monthlySpending).forEach(monthKey => {
+      var [year, month] = monthKey.split('-').map(Number);
+      var date = new Date(year, month - 1);
+      monthlyRates.push([date, monthlySpending[monthKey]]);
     });
 
     // Create or update the spending rates sheet
@@ -124,8 +137,11 @@ function calculateSpendingRate(sheetName = 'Transactions', ignoreOutliers = fals
       ratesSheet = ss.insertSheet(ratesSheetName);
     }
 
-    ratesSheet.getRange(1, 1, 1, 5).setValues([["Date", "Total Spending", "Trailing 90-Day Rate", "Annualized Rate", "Cumulative Spending"]]);
-    ratesSheet.getRange(2, 1, spendingRates.length, 5).setValues(spendingRates);
+    ratesSheet.getRange(1, 1, 1, 4).setValues([["Date", "Total Spending", "Trailing 90-Day Rate", "Cumulative Spending"]]);
+    ratesSheet.getRange(2, 1, spendingRates.length, 4).setValues(spendingRates);
+
+    ratesSheet.getRange(1, 6, 1, 2).setValues([["Month", "Monthly Spending"]]);
+    ratesSheet.getRange(2, 6, monthlyRates.length, 2).setValues(monthlyRates);
 
     // Create or update the charts
     var charts = ratesSheet.getCharts();
@@ -133,7 +149,7 @@ function calculateSpendingRate(sheetName = 'Transactions', ignoreOutliers = fals
 
     // Calculate the position offsets
     var numRows = spendingRates.length + 1; // Including header row
-    var numCols = 5; // Number of columns with data
+    var numCols = 4; // Number of columns with data
 
     var totalSpendingChart = ratesSheet.newChart()
       .setChartType(Charts.ChartType.LINE)
@@ -165,25 +181,25 @@ function calculateSpendingRate(sheetName = 'Transactions', ignoreOutliers = fals
 
     ratesSheet.insertChart(trailingRateChart);
 
-    var annualizedRateChart = ratesSheet.newChart()
-      .setChartType(Charts.ChartType.LINE)
-      .addRange(ratesSheet.getRange(1, 1, numRows, 1))
-      .addRange(ratesSheet.getRange(1, 4, numRows, 1))
+    var monthlySpendingChart = ratesSheet.newChart()
+      .setChartType(Charts.ChartType.COLUMN)
+      .addRange(ratesSheet.getRange(1, 6, monthlyRates.length + 1, 1))
+      .addRange(ratesSheet.getRange(1, 7, monthlyRates.length + 1, 1))
       .setPosition(40, numCols + 1, 0, 0) // Move to the right of the data
-      .setOption('title', `Annualized Rate Over Time - ${sheetName}`)
+      .setOption('title', `Monthly Spending Over Time - ${sheetName}`)
       .setOption('legend.position', 'bottom')
       .setOption('series', {
-        0: { labelInLegend: 'Annualized Rate' }
+        0: { labelInLegend: 'Monthly Spending' }
       })
       .setOption('width', 1000) // Adjust width as needed
       .build();
 
-    ratesSheet.insertChart(annualizedRateChart);
+    ratesSheet.insertChart(monthlySpendingChart);
 
     var cumulativeSpendingChart = ratesSheet.newChart()
       .setChartType(Charts.ChartType.LINE)
       .addRange(ratesSheet.getRange(1, 1, numRows, 1))
-      .addRange(ratesSheet.getRange(1, 5, numRows, 1))
+      .addRange(ratesSheet.getRange(1, 4, numRows, 1))
       .setPosition(60, numCols + 1, 0, 0) // Move to the right of the data
       .setOption('title', `Cumulative Spending Over Time - ${sheetName}`)
       .setOption('legend.position', 'bottom')

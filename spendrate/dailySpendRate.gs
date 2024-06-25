@@ -93,20 +93,21 @@ function calculateSpendingRate(sheetName = 'Transactions', ignoreOutliers = fals
       var dateObj = new Date(date);
       var daysSinceStart = (dateObj - startDate) / (1000 * 60 * 60 * 24) + 1;
 
-      // Calculate the trailing 90-day rate
+      // Calculate the trailing 90-day rate with exponential decay
       var trailingStartDate = new Date(dateObj);
       trailingStartDate.setDate(trailingStartDate.getDate() - 90);
       var trailingSpending = 0;
-      var trailingDays = 0;
+      var weightSum = 0;
       for (var i = 0; i <= 90; i++) {
         var checkDate = new Date(trailingStartDate);
         checkDate.setDate(trailingStartDate.getDate() + i);
         if (dailySpending[checkDate.toDateString()]) {
-          trailingSpending += dailySpending[checkDate.toDateString()].reduce((acc, val) => acc + val, 0);
-          trailingDays++;
+          var weight = Math.exp(-0.1 * (90 - i)); // Exponential decay factor
+          trailingSpending += dailySpending[checkDate.toDateString()].reduce((acc, val) => acc + val, 0) * weight;
+          weightSum += weight;
         }
       }
-      var trailingRate = trailingDays ? trailingSpending / trailingDays : 0;
+      var trailingRate = weightSum ? trailingSpending / weightSum : 0;
 
       var annualizedRate = trailingRate * daysInYear;
       spendingRates.push([dateObj, dailySpending[date].reduce((acc, val) => acc + val, 0), trailingRate, annualizedRate, cumulativeSpending]);

@@ -67,11 +67,11 @@ Before you begin, ensure you have the following:
 
 2. **Filter Outliers (Optional)**:
 
-   - You'll be asked if you want to ignore outliers. Choose `Yes` to filter out high transactions based on a specified percentile (e.g., 95th percentile).
+   - You'll be asked if you want to ignore outliers. Choose `Yes` to filter out high transactions based on a specified percentile (e.g., 95th percentile). Select No to see all the transactions included in the analysis. 
 
 ### Outlier Filtering
 
-When you choose to ignore outliers, the script calculates a threshold based on the specified percentile. Transactions with amounts greater than this threshold are excluded from the spending rate calculations.
+When you choose to ignore outliers by selecting Yes on the Ignore Outliers dialog box, the script calculates a threshold based on the specified percentile. Transactions with amounts greater than this threshold are excluded from the spending rate calculations. 
 
 #### Example
 
@@ -79,7 +79,7 @@ If you set the outlier percentile to 95%, the script will:
 
 - Sort all transaction amounts in descending order.
 - Determine the 95th percentile amount, i.e., the value below which 95% of the transaction amounts fall.
-- Transactions with amounts above this threshold will be ignored in the calculations.
+- Transactions with amounts above this threshold (which would be the majority of transactions at 95%) will be ignored in the calculations.
 
 The threshold value is included in the resulting sheet name as a dollar equivalent, making it clear which transactions were excluded.
 

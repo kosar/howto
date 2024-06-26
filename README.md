@@ -13,6 +13,11 @@ A collection of "how to" articles and accompanying artifacts (code, tricks, tips
 ## Internet Speed Watcher
 
 [Internet Speed Watcher For Raspberry Pi or Debian Distros](https://github.com/kosar/howto/blob/main/internet_watcher_readme.md)
+
+## Money Velocity Analytics -- Spend Rate Toolkit for Google Sheets
+
+[Analyze Your Spend Rate using SpendRate Google Apps Script](https://github.com/kosar/howto/blob/main/spendrate/Readme.MD)
+
 ## Next How To Goes Here!
 
 

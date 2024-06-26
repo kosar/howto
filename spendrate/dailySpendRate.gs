@@ -242,33 +242,36 @@ function onOpen() {
 }
 
 function showSheetSelector() {
+  var ui = SpreadsheetApp.getUi();
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheets = ss.getSheets();
   var sheetNames = sheets.map(sheet => sheet.getName());
 
-  var ui = SpreadsheetApp.getUi();
-  var response = ui.prompt(
-    'Select Sheet',
-    'Enter the name of the sheet containing transactions (default: "Sheet1"):',
-    ui.ButtonSet.OK_CANCEL,
-    'Sheet1' // Default value
-  );
-
+  // Prompt for sheet name
+  var response = ui.prompt('Select Sheet', 'Enter the name of the sheet containing transactions:', ui.ButtonSet.OK_CANCEL);
   if (response.getSelectedButton() == ui.Button.OK) {
     var sheetName = response.getResponseText();
+    if (sheetName === '') {
+      sheetName = 'Sheet1';
+    }
+    
     if (sheetNames.includes(sheetName)) {
+      // Prompt for ignoring outliers
       var responseIgnoreOutliers = ui.alert('Ignore Outliers?', ui.ButtonSet.YES_NO);
       var ignoreOutliers = responseIgnoreOutliers == ui.Button.YES;
+      var outlierPercentile = 95; // Default value
       
       if (ignoreOutliers) {
         var responsePercentile = ui.prompt('Enter Percentile for Outliers (0-100)', 'Enter the percentile (e.g., 95)', ui.ButtonSet.OK_CANCEL);
-        var outlierPercentile = Number(responsePercentile.getResponseText());
-        if (isNaN(outlierPercentile) || outlierPercentile < 0 || outlierPercentile > 100) {
-          ui.alert('Invalid percentile entered. Using default (95%).');
-          outlierPercentile = 95;
+        if (responsePercentile.getSelectedButton() == ui.Button.OK) {
+          outlierPercentile = Number(responsePercentile.getResponseText());
+          if (isNaN(outlierPercentile) || outlierPercentile < 0 || outlierPercentile > 100) {
+            ui.alert('Invalid percentile entered. Using default (95%).');
+            outlierPercentile = 95;
+          }
         }
       }
-
+      
       calculateSpendingRate(sheetName, ignoreOutliers, outlierPercentile);
     } else {
       ui.alert(`Sheet "${sheetName}" not found.`);

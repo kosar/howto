@@ -80,6 +80,7 @@ If you set the outlier percentile to 95%, the script will:
 - Sort all transaction amounts in descending order.
 - Determine the 95th percentile amount, i.e., the value below which 95% of the transaction amounts fall.
 - Transactions with amounts above this threshold (which would be the majority of transactions at 95%) will be ignored in the calculations.
+- Example: 3% percentile would filter out the very infrequent and very large transactions (e.g., one time payments that can skew the analysis).
 
 The threshold value is included in the resulting sheet name as a dollar equivalent, making it clear which transactions were excluded.
 

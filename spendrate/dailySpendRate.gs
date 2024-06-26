@@ -248,7 +248,7 @@ function showSheetSelector() {
   var sheetNames = sheets.map(sheet => sheet.getName());
 
   // Prompt for sheet name
-  var response = ui.prompt('Select Sheet', 'Enter the name of the sheet containing transactions (or hit Enter for "Sheet1"):', ui.ButtonSet.OK_CANCEL);
+  var response = ui.prompt('Select Sheet', 'Transactions Sheet (or hit Enter for "Sheet1"):', ui.ButtonSet.OK_CANCEL);
   if (response.getSelectedButton() == ui.Button.OK) {
     var sheetName = response.getResponseText();
     if (sheetName === '') {

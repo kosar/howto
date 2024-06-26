@@ -90,8 +90,8 @@ The threshold value is included in the resulting sheet name as a dollar equivale
    - This sheet contains:
      - Date: Transaction date.
      - Total Spending: Total spending for that day.
-     - Trailing 90-Day Rate: Average spending rate over the last 90 days with exponential decay for more realistic smoothing.
-     - Annualized Rate: Estimated annual spending rate.
+     - Trailing 90-Day Rate: Average spending rate over the last 90 days with exponential decay for time value.
+     - Annualized Rate: Estimated annual spending rate (daily time grain).
      - Cumulative Spending: Cumulative spending over time.
    - Charts illustrating spending trends are also included.
 

@@ -249,8 +249,9 @@ function showSheetSelector() {
   var ui = SpreadsheetApp.getUi();
   var response = ui.prompt(
     'Select Sheet',
-    'Enter the name of the sheet containing transactions:',
-    ui.ButtonSet.OK_CANCEL
+    'Enter the name of the sheet containing transactions (default: "Sheet1"):',
+    ui.ButtonSet.OK_CANCEL,
+    'Sheet1' // Default value
   );
 
   if (response.getSelectedButton() == ui.Button.OK) {

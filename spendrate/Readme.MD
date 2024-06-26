@@ -41,8 +41,7 @@ Before you begin, ensure you have the following:
    - Date: Should be in YYYY-MM-DD format.
    - Description: Description of the transaction.
    - Amount: Transaction amount. Negative values represent expenses.
-   NOTE: This is the default format of transaction downloads in US banks such as Bank Of America's Download Transactions capability.
-   You can safely import those downloads  into a sheet and then run this tool over that list of transactions.
+   - **Note**: This is the default format of transaction downloads in US banks such as Bank of America's Download Transactions capability. You can safely import those downloads into a sheet and then run this tool over that list of transactions.
 
 3. **Open Google Apps Script Editor**:
 
@@ -70,13 +69,27 @@ Before you begin, ensure you have the following:
 
    - You'll be asked if you want to ignore outliers. Choose `Yes` to filter out high transactions based on a specified percentile (e.g., 95th percentile).
 
+### Outlier Filtering
+
+When you choose to ignore outliers, the script calculates a threshold based on the specified percentile. Transactions with amounts greater than this threshold are excluded from the spending rate calculations.
+
+#### Example
+
+If you set the outlier percentile to 95%, the script will:
+
+- Sort all transaction amounts in descending order.
+- Determine the 95th percentile amount, i.e., the value below which 95% of the transaction amounts fall.
+- Transactions with amounts above this threshold will be ignored in the calculations.
+
+The threshold value is included in the resulting sheet name as a dollar equivalent, making it clear which transactions were excluded.
+
 3. **View Results**:
 
    - After the script completes, a new sheet named `[Sheet Name] - Spending Rates - OutlierFilterOn - [Percentile] - [Threshold]` is created.
    - This sheet contains:
      - Date: Transaction date.
      - Total Spending: Total spending for that day.
-     - Trailing 90-Day Rate: Average spending rate over the last 90 days.
+     - Trailing 90-Day Rate: Average spending rate over the last 90 days with exponential decay for more realistic smoothing.
      - Annualized Rate: Estimated annual spending rate.
      - Cumulative Spending: Cumulative spending over time.
    - Charts illustrating spending trends are also included.

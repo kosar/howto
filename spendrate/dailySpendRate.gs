@@ -1,3 +1,20 @@
+// Header for this file as of this minimal version: this is notes for coders and will disappear in the next version.
+// What this is: A Google Apps Script (GAS) script to calculate daily spending rates from a Google Sheets transaction log.
+// Status: This is a minimal version of the script that can be run from the Google Sheets UI.
+// How to use: Add this script to a Google Sheets document, then open the document and run the script from the "Spending Analysis" menu.
+// Note: This script is a starting point and may need to be customized based on the structure of the transaction log in the Google Sheets document.
+// Next up we plan to add these features: 
+// - Pull data from a known Google Drive location (credentials will be needed) where the CSV file of transactions matching this script's expected format is stored.
+// - Add a function to automatically run this script on a schedule (e.g., daily) to update the spending rate analysis.
+// - Add a function to send an email or notification when the spending rate exceeds a certain threshold.
+// There is still an expectation of a manual "pump" data model here where something has to import the raw transactions from the bank system of record to a Google sheet. 
+// This script is then run to analyze the data in the Google sheet. In a many moons future version, we could directly connect to bank APIs to fetch the transaction data. 
+// We could also mine emails which can be configured to receive transaction alerts from the bank, and then analyze the emails to extract transaction data periodically. 
+// Disclaimer:
+// None of this is rocket science, it is an exercise in automation and data analysis using google apps script, and free compute time on free Google accounts. 
+// This is not financial advice, and the author is not a financial advisor.
+// Please do submit issues in the GitHub repo if you find any bugs or have feature requests.
+
 // Define a global variable to store the outlier threshold
 var outlierThreshold = null;
 

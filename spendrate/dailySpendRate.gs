@@ -1,19 +1,94 @@
-// Header for this file as of this minimal version: this is notes for coders and will disappear in the next version.
-// What this is: A Google Apps Script (GAS) script to calculate daily spending rates from a Google Sheets transaction log.
-// Status: This is a minimal version of the script that can be run from the Google Sheets UI.
-// How to use: Add this script to a Google Sheets document, then open the document and run the script from the "Spending Analysis" menu.
-// Note: This script is a starting point and may need to be customized based on the structure of the transaction log in the Google Sheets document.
-// Next up we plan to add these features: 
-// - Pull data from a known Google Drive location (credentials will be needed) where the CSV file of transactions matching this script's expected format is stored.
-// - Add a function to automatically run this script on a schedule (e.g., daily) to update the spending rate analysis.
-// - Add a function to send an email or notification when the spending rate exceeds a certain threshold.
-// There is still an expectation of a manual "pump" data model here where something has to import the raw transactions from the bank system of record to a Google sheet. 
-// This script is then run to analyze the data in the Google sheet. In a many moons future version, we could directly connect to bank APIs to fetch the transaction data. 
-// We could also mine emails which can be configured to receive transaction alerts from the bank, and then analyze the emails to extract transaction data periodically. 
-// Disclaimer:
-// None of this is rocket science, it is an exercise in automation and data analysis using google apps script, and free compute time on free Google accounts. 
-// This is not financial advice, and the author is not a financial advisor.
-// Please do submit issues in the GitHub repo if you find any bugs or have feature requests.
+// Header for spendrate with Gdrive import functionality (Version 2)
+// This version can pull data from Google Drive and calculate spending rates using the rest of the code in this file
+// It requires the user to provide a folder name in the Google Drive where the transactions are stored in a CSV file
+// The CSV file should have the following columns: Date, Description, Amount
+
+// Function to access a folder in Google Drive and list all files in the folder
+// Note: this script is designed to ONLY access files in the folder below, and nothing else in your Google Drive
+// This keeps the security scope to a minimum for this script and avoids any potential data leaks. 
+function accessFolder() {
+  var folderId = '1B4HZn7mHdW0zaAA0ufW2TV3n-M5qy4bw'; // This is the working folder for this script
+  var folder = DriveApp.getFolderById(folderId);
+  var files = folder.getFiles();
+
+  while (files.hasNext()) {
+    var file = files.next();
+    Logger.log('File Name: ' + file.getName() + ' | File ID: ' + file.getId());
+  }
+}
+
+// Function to import transactions from a CSV file in Google Drive
+function importTransactionsFromGDrive(folderName) {
+  // Check if folderName is provided
+  if (!folderName) {
+    throw new Error('Please provide a folder name for importing transactions.');
+  }
+
+  // Get the folder by name
+  var folder = DriveApp.getFoldersByName(folderName).next();
+  if (!folder) {
+    throw new Error(`Folder "${folderName}" not found.`);
+  }
+
+  // Get all files in the folder
+  var files = folder.getFiles();
+  var transactionsFile = null;
+
+  // Find the first CSV file in the folder
+  while (files.hasNext()) {
+    var file = files.next();
+    if (file.getMimeType() === 'text/csv') {
+      transactionsFile = file;
+      break;
+    }
+  }
+
+  if (!transactionsFile) {
+    throw new Error('No CSV file found in the folder.');
+  }
+
+  // Read the CSV file
+  var csvData
+  var blob = transactionsFile.getBlob();
+  var csvData = Utilities.newBlob(blob).getDataAsString();
+
+  // Parse the CSV data
+  var transactions = Utilities.parseCsv(csvData);
+
+  // Create a new sheet for the imported transactions
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetName = `Transactions - ${folderName}`;
+  var sheet = ss.getSheetByName(sheetName);
+
+  if (sheet) {
+    sheet.clear();
+  } else {
+    sheet = ss.insertSheet(sheetName);
+  }
+
+  sheet.getRange(1, 1, transactions.length, transactions[0].length).setValues(transactions);
+
+  SpreadsheetApp.getUi().alert('Transactions imported successfully!');
+} // End of importTransactionsFromGDrive
+
+// Test function that can be invoked from the apps script editor console vs requiring it to be run from the spreadsheet
+function testImportTransactions() {
+  importTransactionsFromGDrive('SpendRateTransactions');
+}
+
+// Function to prompt user for folder name from which to pull transactions from a CSV file in Google Drive
+function importTransactions() {
+  // Prompt the user for the folder name to import transactions from and call the import function with the folder name (provides a default)
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.prompt('Enter Folder Name', 'Enter the folder name for importing transactions (default: SpendRateTransactions)', ui.ButtonSet.OK_CANCEL);
+  if (response.getSelectedButton() == ui.Button.OK) {
+    var folderName = response.getResponseText();
+    if (folderName === '') {
+      folderName = 'SpendRateTransactions';
+    }
+    importTransactionsFromGDrive(folderName);
+  }
+}
 
 // Define a global variable to store the outlier threshold
 var outlierThreshold = null;
@@ -255,6 +330,11 @@ function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('Spending Analysis')
     .addItem('Calculate Spending Rate', 'showSheetSelector')
+    .addItem('Import Transactions', 'importTransactions')
+    .addToUi();
+
+  ui.createMenu('Drive Operations')
+    .addItem('Access Folder', 'accessFolder')
     .addToUi();
 }
 
